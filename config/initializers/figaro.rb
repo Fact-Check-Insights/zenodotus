@@ -18,21 +18,24 @@ Figaro.require_keys("MAILGUN_API_KEY")
 # Public links
 Figaro.require_keys("PUBLIC_LINK_HOST")
 
-Figaro.require_keys("NEO4J_URL")
-Figaro.require_keys("NEO4J_USERNAME")
-Figaro.require_keys("NEO4J_PASSWORD")
+# Figaro.require_keys("NEO4J_URL")
+# Figaro.require_keys("NEO4J_USERNAME")
+# Figaro.require_keys("NEO4J_PASSWORD")
 
 if Figaro.env.USE_S3_DEV_TEST == "true" || Rails.env == "production"
   Figaro.require_keys("AWS_REGION")
   Figaro.require_keys("AWS_S3_BUCKET_NAME")
   Figaro.require_keys("AWS_ACCESS_KEY_ID")
   Figaro.require_keys("AWS_SECRET_ACCESS_KEY")
+  Figaro.require_keys("S3_ENDPOINT")
 end
 
 if Rails.env == "production"
   Figaro.require_keys("MEMCACHIER_SERVERS")
-  Figaro.require_keys("MEMCACHIER_USERNAME")
-  Figaro.require_keys("MEMCACHIER_PASSWORD")
+  unless Figaro.env.ON_DOCKER == "yes"
+    Figaro.require_keys("MEMCACHIER_USERNAME")
+    Figaro.require_keys("MEMCACHIER_PASSWORD")
+  end
 end
 
 if Figaro.env.HONEYBADGER_API_KEY.blank? == false

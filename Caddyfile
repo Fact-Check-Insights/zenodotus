@@ -1,0 +1,23 @@
+{
+    email cguess@gmail.com
+}
+
+# Media Vault site
+http://mediavault.fullfact.org {
+    reverse_proxy web:3000
+}
+
+# Fact Check Insights site
+http://factcheckinsights.fullfact.org {
+    reverse_proxy web:3000
+}
+
+# Public link site (for sharing media)
+http://public.fullfact.org {
+    reverse_proxy web:3000
+}
+
+# Also support localhost access for all sites
+http://localhost {
+    reverse_proxy web:3000
+}

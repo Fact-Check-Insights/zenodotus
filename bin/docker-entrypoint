@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Ensure gems are installed (in case of volume mounts)
+bundle check || bundle install --jobs=4 --retry=3
+
+# Prepare runtime directories for Puma and logs
+mkdir -p tmp/pids tmp/sockets log
+
+# Wait for Postgres
+if [ -n "${DATABASE_URL:-}" ]; then
+  echo "Waiting for Postgres at ${DATABASE_URL}..."
+  ruby -e "require 'uri'; require 'socket'; u=URI(ENV['DATABASE_URL']); host=u.host; port=u.port||5432; begin; TCPSocket.new(host, port).close; rescue => e; sleep 1; retry; end" >/dev/null 2>&1
+fi
+
+# Run migrations unless disabled
+if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
+  echo "Running migrations"
+  bundle exec rails db:migrate
+else
+  echo "Skipping migrations (RUN_MIGRATIONS=${RUN_MIGRATIONS})"
+fi
+
+exec "$@"
+
+

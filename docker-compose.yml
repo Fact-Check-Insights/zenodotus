@@ -1,0 +1,154 @@
+services:
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: zenodotus_production
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  redis:
+    image: redis:7
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  memcached:
+    image: memcached:1.6
+
+  # neo4j:
+  #   image: neo4j:5
+  #   environment:
+  #     NEO4J_AUTH: neo4j/password
+  #     NEO4J_dbms_default__listen__address: 0.0.0.0
+  #     NEO4J_dbms_default__advertised__address: neo4j
+  #     NEO4J_USERNAME: neo4j
+  #     NEO4J_PASSWORD: password
+  #   volumes:
+  #     - neo4j-data:/data
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "cypher-shell -a bolt://localhost:7687 -u $NEO4J_USERNAME -p $NEO4J_PASSWORD 'RETURN 1;' >/dev/null 2>&1 || exit 1"]
+  #     interval: 15s
+  #     timeout: 5s
+  #     retries: 10
+  #     start_period: 30s
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        RUBY_VERSION: 3.3.7
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      memcached:
+        condition: service_started
+    environment:
+      RAILS_ENV: production
+      RACK_ENV: production
+      ON_DOCKER: "yes"
+      DATABASE_URL: postgres://postgres:postgres@db:5432/zenodotus_production
+      REDISCLOUD_URL: redis://redis:6379/1
+      MEMCACHIER_SERVERS: memcached:11211
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:-devsecret}
+      NEO4J_URL: neo4j://neo4j:7687
+      NEO4J_USERNAME: neo4j
+      NEO4J_PASSWORD: password
+      RAILS_LOG_TO_STDOUT: "true"
+      RAILS_SERVE_STATIC_FILES: "true"
+      RUN_MIGRATIONS: "true"
+      # S3 / Shrine
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_S3_BUCKET_NAME: ${AWS_S3_BUCKET_NAME}
+      AWS_S3_BUCKET_NAME_HYPATIA: ${AWS_S3_BUCKET_NAME_HYPATIA:-hypatia-testing}
+      S3_ENDPOINT: ${S3_ENDPOINT:-https://storage.googleapis.com}
+      CLOUDFRONT_HOST: ${CLOUDFRONT_HOST}
+      # Required whitelisted hosts
+      FACT_CHECK_INSIGHTS_HOST: ${FACT_CHECK_INSIGHTS_HOST:-factcheckinsights.fullfact.org}
+      MEDIA_VAULT_HOST: ${MEDIA_VAULT_HOST:-mediavault.fullfact.org}
+      PUBLIC_LINK_HOST: ${PUBLIC_LINK_HOST:-public.fullfact.org}
+    env_file:
+      - .env
+    volumes: [] # No persistent local storage; Shrine uses S3 in production
+    ports:
+      - "3000:3000"
+    command: ["bundle", "exec", "puma", "-C", "config/puma.rb"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -H 'Host: ${MEDIA_VAULT_HOST:-mediavault.fullfact.org}' http://localhost:3000/ >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  worker:
+    build: .
+    platform: linux/amd64
+    depends_on:
+      - web
+    environment:
+      RAILS_ENV: production
+      RACK_ENV: production
+      ON_DOCKER: "yes"
+      DATABASE_URL: postgres://postgres:postgres@db:5432/zenodotus_production
+      REDISCLOUD_URL: redis://redis:6379/1
+      MEMCACHIER_SERVERS: memcached:11211
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:-devsecret}
+      NEO4J_URL: neo4j://neo4j:7687
+      NEO4J_USERNAME: neo4j
+      NEO4J_PASSWORD: password
+      MALLOC_ARENA_MAX: "2"
+      RUN_MIGRATIONS: "false"
+      # S3 / Shrine
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_S3_BUCKET_NAME: ${AWS_S3_BUCKET_NAME}
+      AWS_S3_BUCKET_NAME_HYPATIA: ${AWS_S3_BUCKET_NAME_HYPATIA:-hypatia-testing}
+      S3_ENDPOINT: ${S3_ENDPOINT:-https://storage.googleapis.com}
+      CLOUDFRONT_HOST: ${CLOUDFRONT_HOST}
+      # Required whitelisted hosts
+      FACT_CHECK_INSIGHTS_HOST: ${FACT_CHECK_INSIGHTS_HOST:-factcheckinsights.fullfact.org}
+      MEDIA_VAULT_HOST: ${MEDIA_VAULT_HOST:-mediavault.fullfact.org}
+      PUBLIC_LINK_HOST: ${PUBLIC_LINK_HOST:-public.fullfact.org}
+    command: ["bundle", "exec", "sidekiq", "-e", "production", "-C", "config/sidekiq.yml", "-t", "10", "-v"]
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f sidekiq >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  caddy:
+    image: caddy:2
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+
+volumes:
+  db-data:
+  redis-data:
+  neo4j-data:
+
+

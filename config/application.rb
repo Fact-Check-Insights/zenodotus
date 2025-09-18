@@ -41,7 +41,7 @@ module Zenodotus
       domain: Figaro.env.MAIL_DOMAIN,
     }
 
-    config.force_ssl = true
+    config.force_ssl = ENV["FORCE_SSL"] == "true"
     config.action_view.image_loading = :lazy
   end
 end

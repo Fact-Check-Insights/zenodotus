@@ -11,9 +11,11 @@ require "shrine/storage/s3"
 def make_s3_bucket(bucket_name, cdn_name = nil)
   Shrine::Storage::S3.new(
     bucket: bucket_name, # required
-    region: "us-east-1", # required
+    region: Figaro.env.AWS_REGION, # required
     access_key_id: Figaro.env.AWS_ACCESS_KEY_ID,
     secret_access_key: Figaro.env.AWS_SECRET_ACCESS_KEY,
+    endpoint: Figaro.env.S3_ENDPOINT, # e.g., https://storage.googleapis.com for GCP S3-compatible API
+    force_path_style: true,
   )
 end
 

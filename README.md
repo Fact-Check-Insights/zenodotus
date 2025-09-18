@@ -179,6 +179,89 @@ We use mostly a standard Rails stack, with a few new things that are generally r
 
 See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for additional development setup instructions.
 
+## Docker deployment and management
+
+This app can run on bare metal using Docker Compose. The compose stack includes:
+
+- Postgres, Redis, Memcached, Neo4j (internal only)
+- Web (Puma) and Sidekiq worker
+- Caddy reverse proxy to `web:3000`
+
+### One-time setup
+
+1. Install Docker and Docker Compose v2
+2. Create environment file:
+   - Copy `env.example` to `.env`
+   - Fill required values: `SECRET_KEY_BASE`, `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_S3_BUCKET_NAME`, `CLOUDFRONT_HOST`
+   - Optionally adjust: `FACT_CHECK_INSIGHTS_HOST`, `MEDIA_VAULT_HOST`, `PUBLIC_LINK_HOST`
+3. Build images:
+   ```bash
+   docker compose build
+   ```
+
+### Start/stop
+
+```bash
+# Start backing services first (optional; web will wait on healthchecks)
+docker compose up -d db redis memcached neo4j
+
+# Start application services
+docker compose up -d web worker caddy
+
+# Stop all
+docker compose down
+```
+
+### Healthchecks (compose-managed)
+
+- Postgres: `pg_isready` (with start_period)
+- Redis: `redis-cli ping`
+- Neo4j: `cypher-shell` `RETURN 1;`
+- Web: `curl http://localhost:3000/` with `Host` header
+
+`web` waits for healthy `db`, `redis`, and `neo4j` before starting. Neo4j and Postgres ports are not exposed externally.
+
+### Logs
+
+```bash
+docker compose logs -f web
+docker compose logs -f worker
+docker compose logs -f db redis memcached neo4j caddy
+```
+
+### Scaling workers
+
+```bash
+docker compose up -d --scale worker=3
+```
+
+### Running tasks
+
+```bash
+# Rails console
+docker compose exec web bundle exec rails console
+
+# DB migrations (also auto-run by web entrypoint on boot)
+docker compose exec web bundle exec rails db:migrate
+
+# One-off rake task
+docker compose run --rm web bundle exec rake your:task
+```
+
+### Storage
+
+Production uses S3 via Shrine. No persistent local volumes are mounted for uploads. Configure S3 credentials in `.env`.
+
+### Notes
+
+- `web` entrypoint runs migrations by default (`RUN_MIGRATIONS=true`); `worker` sets it to false
+- Caddy proxies to `web:3000`; configure DNS for `vault.factcheckinsights.org` to point at the host
+- To rebuild after code changes:
+  ```bash
+  docker compose build web worker
+  docker compose up -d web worker
+  ```
+
 ## License
 
 See [LICENSE](./LICENSE) for the terms governing this software.

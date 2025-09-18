@@ -28,7 +28,7 @@ Rails.application.configure do
   # config.assets.css_compressor = :purger
 
   # Do not fallback to assets pipeline if a precompiled asset is missed.
-  config.assets.compile = false
+  config.assets.compile = true
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
@@ -56,15 +56,18 @@ Rails.application.configure do
   config.log_tags = [ :request_id ]
 
   # Use a different cache store in production.
-  config.cache_store = :mem_cache_store,
-                      (ENV["MEMCACHIER_SERVERS"] || "").split(","),
-                      { username: ENV["MEMCACHIER_USERNAME"],
-                        password: ENV["MEMCACHIER_PASSWORD"],
-                        failover: true,
-                        socket_timeout: 1.5,
-                        socket_failure_delay: 0.2,
-                        down_retry_delay: 60
-                      }
+  memcache_servers = (ENV["MEMCACHIER_SERVERS"] || "").split(",")
+  memcache_options = {
+    failover: true,
+    socket_timeout: 1.5,
+    socket_failure_delay: 0.2,
+    down_retry_delay: 60
+  }
+  if ENV["MEMCACHIER_USERNAME"].present? && ENV["MEMCACHIER_PASSWORD"].present?
+    memcache_options[:username] = ENV["MEMCACHIER_USERNAME"]
+    memcache_options[:password] = ENV["MEMCACHIER_PASSWORD"]
+  end
+  config.cache_store = :mem_cache_store, memcache_servers, memcache_options
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
   # config.active_job.queue_adapter     = :resque
