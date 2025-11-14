@@ -13,14 +13,10 @@
 
     display: flex;
     flex-direction: column;
-    padding: max(
-        var(--site-footer--padding),
-        var(--site-footer--element-spacing)
-    );
-    gap: max(
-        var(--site-footer--grid-spacing),
-        var(--site-footer--element-spacing)
-    );
+    padding: max(var(--site-footer--padding),
+            var(--site-footer--element-spacing));
+    gap: max(var(--site-footer--grid-spacing),
+            var(--site-footer--element-spacing));
 
     p:not(:last-child) {
         margin-bottom: var(--site-footer--element-spacing);
@@ -36,10 +32,8 @@
 #site-footer__about {
     display: flex;
     flex-direction: column;
-    gap: max(
-        var(--site-footer--about-spacing),
-        var(--site-footer--element-spacing)
-    );
+    gap: max(var(--site-footer--about-spacing),
+            var(--site-footer--element-spacing));
     flex-shrink: 3;
 }
 
@@ -55,6 +49,18 @@
 
     a {
         @include shared.underline-off;
+    }
+}
+
+#site-footer__nav--logos {
+    li {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    img {
+        display: block;
     }
 }
 
