@@ -50,6 +50,10 @@ Rails.application.routes.draw do
     get "terms", to: "application#terms", as: "terms"
     get "select_locale/:locale", to: "application#select_locale", as: "select_locale"
 
+    # Privacy policy acceptance
+    get "privacy_policy", to: "privacy_policy_acceptance#show", as: "privacy_policy"
+    post "privacy_policy/accept", to: "privacy_policy_acceptance#accept", as: "accept_privacy_policy"
+
     scope "/apply" do
       get "/", to: "applicants#new", as: "new_applicant"
       post "/", to: "applicants#create", as: "applicants"

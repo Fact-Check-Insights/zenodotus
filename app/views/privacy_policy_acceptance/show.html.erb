@@ -1,0 +1,88 @@
+<% @title_tag = "Privacy Policy Update" %>
+
+<div class="content content--md">
+  <div class="privacy-policy-acceptance">
+    <h1>Privacy Policy Update</h1>
+
+    <div class="privacy-policy-notice">
+      <p>
+        <strong>We have updated our Privacy Policy.</strong>
+      </p>
+      <p>
+        Please review the updated policy below and accept it to continue using Fact-Check Insights and MediaVault.
+      </p>
+    </div>
+
+    <div class="privacy-policy-content">
+      <p>
+        <i>Effective: November 2025</i>
+      </p>
+
+      <p>
+        Fact-Check Insights and MediaVault are free services provided by Full Fact and Maldita. Personally identifiable information - including name, email address, and organization - is only collected for the purposes of user registration and account management and Full Fact and Maldita do not retain any other information nor do sell or otherwise share any of this data with third parties.
+      </p>
+
+      <p>
+        Our services do contain links to websites run by other organizations. We have no control over nor responsibility for any data collected by those third-party sites. Users are advised to review the privacy policies of each third-party organization.
+      </p>
+
+      <p>
+        Anyone may request the removal of their data from the service by sending an email to the service’s admins at <a href="mailto:hello@factcheckinsights.org">hello@factcheckinsights.org</a> with a link to the content and a description of the reason for the removal. The service’s admins reserve the right to deny any takedown request for any reason.
+      </p>
+
+      <p>
+        We reserve the right to amend this privacy statement at any time for any reason. We will let you know of any changes by sending a notification in the app and by posting them here. We encourage you to periodically return to review the privacy policy.
+      </p>
+
+      <p>
+        If you have any questions please contact us at <a href="mailto:hello@factcheckinsights.org">hello@factcheckinsights.org</a>.
+      </p>
+    </div>
+
+    <div class="privacy-policy-acceptance-actions">
+      <%= form_with url: accept_privacy_policy_path, method: :post, local: true do |form| %>
+        <div class="form-group">
+          <%= form.submit "I Accept the Privacy Policy", class: "btn btn-primary btn-lg" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<style>
+  .privacy-policy-acceptance {
+    margin: 2rem 0;
+  }
+
+  .privacy-policy-notice {
+    background-color: #f8f9fa;
+    border-left: 4px solid #0066cc;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .privacy-policy-notice strong {
+    display: block;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .privacy-policy-content {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    max-height: 500px;
+    overflow-y: auto;
+  }
+
+  .privacy-policy-acceptance-actions {
+    text-align: center;
+    padding: 1rem 0;
+  }
+
+  .privacy-policy-acceptance-actions .btn {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+  }
+</style>
