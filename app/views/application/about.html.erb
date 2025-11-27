@@ -5,64 +5,37 @@
 </div>
 
 <div class="b2 mx-auto max-w-2xl">
-	<p><%= t("about.the_duke_reporters_lab_is_a_center_for_journalism_research") %></p>
-	<p><%= t("about.the_lab_is_funded") %></p>
+	<p><%= t("about.mediavault_introduction") %></p>
+	<p><%= t("about.new_phase_mediavault_expands") %></p>
+	<p><%= t("about.content_property_of_users") %></p>
+	<p><%= t("about.commitment_to_innovation") %></p>
+	<p><i><%= t("about.original_developed_by_duke_reporters_lab") %></i></p>
 </div>
 
-<div id="section--about-team" class="py-10 lg:py-20">
-	<ul class="team-members">
-		<li class="team-member">
-			<div class="team-member__photo-wrapper">
-				<%= image_tag "team/bill.jpg", size: "300x300", class: "team-member__photo", alt: "Bill Adair" %>
+<div class="mx-auto max-w-5xl py-10 lg:py-20">
+	<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+		<div>
+			<div class="text-center mb-6">
+				<h2 class="text-2xl font-bold">Duke Reporters' Lab</h2>
 			</div>
-			<h4 class="team-member__name"><%= t("about.bill_adair") %></h4>
-			<p class="team-member__bio"><%= t("about.bill_adair_is_the_knight_professor") %></p>
-			<ul class="team-member__contact">
-				<li><%= email_link_to "bill.adair@duke.edu" %></li>
-				<li><%= twitter_link_to "BillAdairDuke" %></li>
-			</ul>
-		</li>
-		<li class="team-member">
-			<div class="team-member__photo-wrapper">
-				<%= image_tag "team/chris.jpg", size: "300x300", class: "team-member__photo", alt: "Christopher Guess" %>
+			<div class="b2">
+				<p><b>• Bill Adair,</b> <%= t("about.bill_adair_is_the_knight_professor") %></p>
+				<p><b>• Christopher Guess,</b> <%= t("about.christopher_guess_is_the_lead_technologist_for_the_reporters_lab") %></p>
+				<p><b>• Erica Ryan,</b> <%= t("about.erica_ryan_is_the_project_manager_for_the_reporters_lab") %></p>
+				<p><b>• Joel Luther,</b> <%= t("about.joel_luther_is_the_claimreview") %></p>
 			</div>
-			<h4 class="team-member__name"><%= t("about.christopher_guess") %></h4>
-			<p class="team-member__bio"><%= t("about.christopher_guess_is_the_lead_technologist_for_the_reporters_lab") %></p>
-			<ul class="team-member__contact">
-				<li><%= email_link_to "christopher.guess@duke.edu" %></li>
-				<li><%= twitter_link_to "cguess" %></li>
-			</ul>
-		</li>
-		<li class="team-member">
-			<div class="team-member__photo-wrapper">
-				<%= image_tag "team/erica.jpg", size: "300x300", class: "team-member__photo", alt: "Erica Ryan" %>
+		</div>
+
+		<div>
+			<div class="text-center mb-6">
+				<h2 class="text-2xl font-bold"><%= t("about.additional_contributors") %></h2>
 			</div>
-			<h4 class="team-member__name"><%= t("about.erica_ryan") %></h4>
-			<p class="team-member__bio"><%= t("about.erica_ryan_is_the_project_manager_for_the_reporters_lab") %></p>
-			<ul class="team-member__contact">
-				<li><%= email_link_to "elryan@gmail.com" %></li>
-			</ul>
-		</li>
-		<li class="team-member">
-			<div class="team-member__photo-wrapper">
-				<%= image_tag "team/joel.jpg", size: "300x300", class: "team-member__photo", alt: "Joel Luther" %>
+			<div class="b2">
+				<p><b>• Valentina Garbelotto,</b> <%= t("about.spanish_translator") %></p>
+				<p><b>• Justin Reese,</b> <%= t("about.developer") %></p>
+				<p><b>• Asa Royal,</b> <%= t("about.developer") %></p>
+				<p><b>• Joanna Fonte,</b> <%= t("about.designer") %></p>
 			</div>
-			<h4 class="team-member__name"><%= t("about.joel_luther") %></h4>
-			<p class="team-member__bio"><%= t("about.joel_luther_is_the_claimreview") %></p>
-		</li>
-    <li class="team-member">
-    </li>
-    <li class="team-member">
-    </li>
-	</ul>
-</div>
-<div class="full-bleed-headline text-center">
-	<h2><%= t("about.additional_contributors") %></h2></div>
-<div class="b2 mx-auto max-w-2xl">
-	<p></p>
-	<p><b>• Valentina Garbelotto,</b> <%= t("about.spanish_translator") %></p>
-	<p><b>• Justin Reese,</b> <%= t("about.developer") %></p>
-	<p><b>• Asa Royal,</b> <%= t("about.developer") %></p>
-	<p><b>• Joanna Fonte,</b> <%= t("about.designer") %></p>
-	<p></p>
+		</div>
+	</div>
 </div>
