@@ -101,6 +101,9 @@ protected
     return if controller_name == "privacy_policy_acceptance"
     return if controller_name == "sessions" && action_name == "destroy"
 
+    # Allow users to view privacy policy and terms pages without accepting
+    return if controller_name == "application" && ["privacy", "terms"].include?(action_name)
+
     # Allow MFA setup pages even if privacy policy not accepted
     return if controller_name == "accounts" && ["setup_mfa", "start_webauthn_setup", "finish_webauthn_setup", "start_totp_setup", "finish_totp_setup", "setup_recovery_codes"].include?(action_name)
 

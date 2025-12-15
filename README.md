@@ -129,6 +129,7 @@ An open-source JavaScript package manager used to install/manage JavaScript depe
 1. Install all the Gems: `bundle install` (this may take a few minutes)
    1. You may need to follow [this comment](https://github.com/knu/ruby-unf_ext/issues/81#issuecomment-2891826904) on recent versions of macOS
    1. Ruby 3.3.7 has issues with GCC 15, and may require reinstalling using `RUBY_CONFIGURE_OPTS="--disable-install-doc" CFLAGS="-O2 -fPIC -std=gnu99" rbenv install` for this to work
+   1. you may need to use run `export CONFIGURE_ARGS="with-pg-include=/opt/homebrew/opt/libpq/include"` if pq fails to install
 1. Make sure Postgres is running
 1. Set up the database: `rails db:create && rails db:setup`
 1. Set up your environment variables:
