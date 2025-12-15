@@ -3,17 +3,22 @@
 }
 
 # Media Vault site
-http://mediavault.fullfact.org {
+vault.factcheckinsights.org {
+    reverse_proxy web:3000
+}
+
+# Media Vault site
+www.factcheckinsights.org {
     reverse_proxy web:3000
 }
 
 # Fact Check Insights site
-http://factcheckinsights.fullfact.org {
+factcheckinsights.org {
     reverse_proxy web:3000
 }
 
 # Public link site (for sharing media)
-http://public.fullfact.org {
+mvau.lt {
     reverse_proxy web:3000
 }
 

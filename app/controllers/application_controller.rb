@@ -245,7 +245,8 @@ protected
 
     allowed_hosts = [ Figaro.env.FACT_CHECK_INSIGHTS_HOST,
                       Figaro.env.MEDIA_VAULT_HOST,
-                      Figaro.env.PUBLIC_LINK_HOST ]
+                      Figaro.env.PUBLIC_LINK_HOST,
+                      "www.#{Figaro.env.FACT_CHECK_INSIGHTS_HOST}" ]
 
     unless allowed_hosts.include?(uri.host)
       raise "Invalid origin host #{uri.scheme}://#{uri.host}"
