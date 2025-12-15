@@ -75,6 +75,7 @@ Rails.application.configure do
   config.hosts << Figaro.env.FACT_CHECK_INSIGHTS_HOST
   config.hosts << Figaro.env.MEDIA_VAULT_HOST
   config.hosts << Figaro.env.PUBLIC_LINK_HOST
+  config.hosts << "www.#{Figaro.env.FACT_CHECK_INSIGHTS_HOST}"
   config.hosts << "0.0.0.0:3000"
 
   # Kept for testing later when we change loggers

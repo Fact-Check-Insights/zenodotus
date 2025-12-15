@@ -53,8 +53,9 @@ COPY . .
 # Ensure entrypoint is executable
 RUN chmod +x bin/docker-entrypoint
 
-# Skip asset precompilation at build time
-# Rails will compile assets on demand with config.assets.compile = true
+# Precompile assets at build time using BuildKit secret; no secrets persisted
+RUN --mount=type=secret,id=env \
+    sh -lc 'set -a; . /run/secrets/env; export SKIP_FIGARO_REQUIRE_KEYS=1; set +a; bundle exec rails assets:precompile'
 
 EXPOSE 3000
 
