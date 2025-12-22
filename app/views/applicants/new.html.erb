@@ -1,6 +1,11 @@
 <% @title_tag = t("request_access.request_access") %>
 
 <div class="content">
+	<div class="alert alert--error" role="alert">
+		<div class="alert__message text-xl">
+			Mediavault is in a transition period and applications are not currently being reviewed. However, reviews will resume shortly, so please submit your application and it will be processed once the transition is complete.</strong>
+		</div>
+	</div>
 	<%= form_with(
 			model: @applicant,
 			url: applicants_path,
@@ -99,7 +104,8 @@
 		<div class="form__align-with-fields">
 			<%= f.submit(
 				t("request_access.submit_request"),
-				class: "btn btn--submit") %>
+				class: "btn btn--submit",
+				disabled: true) %>
 		</div>
 	<% end %>
 </div>
