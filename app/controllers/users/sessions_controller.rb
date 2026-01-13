@@ -4,6 +4,8 @@ class Users::SessionsController < Devise::SessionsController
   before_action :check_for_login_and_remote_token, only: [:new]
   before_action :must_be_logged_out, only: [:new]
   before_action :authenticate_user_and_setup!, except: [:create]
+  skip_before_action :allow_params_authentication!, only: [:create]
+
 
   # An error for use when validating MFA tokens for login
   class MFAValidationError < StandardError; end
