@@ -1,8 +1,8 @@
 en:
   layouts:
     footer:
-      is_a_project_of: "%{media_review_link} is a project of the %{reporters_lab_link}. It is an archive of images, videos and memes that have been analyzed by reputable fact-checking organizations from around the world."
-      copyright: "© %{reporters_lab_link} %{current_year}. The compilation of this data is licensed under %{createive_commons_link}."
+      is_a_project_of: "%{media_review_link} is powered by %{full_fact_link} and %{maldita_link}. It is an archive of images, videos and memes that have been analyzed by reputable fact-checking organizations from around the world."
+      copyright: "© Fact-Check Insights %{current_year}. The compilation of this data is licensed under %{creative_commons_link}."
       dashboard: "Dashboard"
       guide_to_the_data: "Guide to the Data"
       request_access_tbd: "Request Access TBD"

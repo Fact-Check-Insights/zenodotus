@@ -127,6 +127,9 @@ An open-source JavaScript package manager used to install/manage JavaScript depe
 1. Navigate into the project folder `cd zenodotus` (or whatever)
 1. Optional: If you intend to develop the [birdsong](https://github.com/cguess/birdsong) and [zorki](https://github.com/cguess/zorki) Gems, clone them to a separate location and update the Zenodotus [./Gemfile](Gemfile) to point to the local instances
 1. Install all the Gems: `bundle install` (this may take a few minutes)
+   1. You may need to follow [this comment](https://github.com/knu/ruby-unf_ext/issues/81#issuecomment-2891826904) on recent versions of macOS
+   1. Ruby 3.3.7 has issues with GCC 15, and may require reinstalling using `RUBY_CONFIGURE_OPTS="--disable-install-doc" CFLAGS="-O2 -fPIC -std=gnu99" rbenv install` for this to work
+   1. you may need to use run `export CONFIGURE_ARGS="with-pg-include=/opt/homebrew/opt/libpq/include"` if pq fails to install
 1. Make sure Postgres is running
 1. Set up the database: `rails db:create && rails db:setup`
 1. Set up your environment variables:
@@ -136,9 +139,11 @@ An open-source JavaScript package manager used to install/manage JavaScript depe
    ```
    127.0.0.1	www.factcheckinsights.local
    127.0.0.1	vault.factcheckinsights.local
+   127.0.0.1   public-vault.factcheckinsights.local
    ```
    - These are just the suggested defaults. Feel free to replace this with an alternative routing method or different URLs.
-1. Bootstrap assets: `rails assets:precompile`
+1. If you don't want hot-reload for css and image changes, precompile assets: `rails assets:precompile`
+   1. Note that if you do precompile assets, these will always take precedence over dynamically generated assets, so will need to be removed or re-compiled to see changes.
 1. In your shell, run `rails s` (or `./bin/dev` if you will be editing the styles or markup)
 
 ✨ The app should now be running and available at [http://www.factcheckinsights.local:3000](http://www.factcheckinsights.local:3000) (Insights) and [http://vault.factcheckinsights.local:3000](http://vault.factcheckinsights.local:3000) (MediaVault), or whatever URLs you chose. If not, contact @cguess or another developer.

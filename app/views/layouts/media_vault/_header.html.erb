@@ -40,7 +40,7 @@
    					<% end %>
    					<ol id="site-nav__account-menu" class="site-nav__links">
   						<li>
- 							<%= link_to fact_check_insights_root_url, class: "btn btn--naked icon-prefixed" do %>
+ 							<%= link_to root_url(host: SiteDefinitions::FACT_CHECK_INSIGHTS[:host]), class: "btn btn--naked icon-prefixed" do %>
    									<%= use_svg "switch-lr", svg_attrs: { class: "icon icon--lg", aria: { hidden: true } } %>
 								<span><%= t("layouts.header.switch_to", title: SiteDefinitions::FACT_CHECK_INSIGHTS[:title]) %></span>
  							<% end %>

@@ -1,0 +1,24 @@
+<% @title_tag = "Privacy Policy Update" %>
+
+<div class="mx-auto text-center pt-20 mb-0">
+    <h1>We have updated our Privacy Policy</h4>
+    <p>
+      Please review the updated policy below and accept it to continue using Fact-Check Insights and MediaVault.
+    </p>
+</div>
+
+<div class="content content--md content--center">
+  <div class="mb-8">
+    <div class="bg-white border border-gray-300 p-8 mb-8 max-h-[500px] overflow-y-auto">
+      <%= render "application/privacy_policy_content" %>
+    </div>
+
+    <div class="text-center py-4">
+      <%= form_with url: accept_privacy_policy_path, method: :post, local: true do |form| %>
+        <div class="form-group">
+          <%= form.submit "I Accept the Updated Privacy Policy", class: "btn btn-primary btn-lg px-8 py-4 text-lg" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

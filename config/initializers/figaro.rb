@@ -1,3 +1,8 @@
+# Skip strict Figaro requirements during asset precompilation
+if ENV["SKIP_FIGARO_REQUIRE_KEYS"] == "1"
+  return
+end
+
 # This is the salt value used to encrypt various things, you can generate one by running
 # `rails secret`
 Figaro.require_keys("KEY_ENCRYPTION_SALT")

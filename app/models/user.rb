@@ -201,6 +201,11 @@ class User < ApplicationRecord
     self.is_admin? || self.is_media_vault_user?
   end
 
+  sig { returns(T::Boolean) }
+  def privacy_policy_accepted?
+    privacy_policy_accepted_at.present?
+  end
+
   def valid_remote_key
     self.user_remote_keys.find_by(user: self, expires_at: Time.now..Float::INFINITY)
   end

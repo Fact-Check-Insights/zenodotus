@@ -1,19 +1,4 @@
 services:
-  db:
-    image: postgres:14
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: zenodotus_production
-    volumes:
-      - db-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-
   redis:
     image: redis:7
     command: ["redis-server", "--appendonly", "yes"]
@@ -28,32 +13,15 @@ services:
   memcached:
     image: memcached:1.6
 
-  # neo4j:
-  #   image: neo4j:5
-  #   environment:
-  #     NEO4J_AUTH: neo4j/password
-  #     NEO4J_dbms_default__listen__address: 0.0.0.0
-  #     NEO4J_dbms_default__advertised__address: neo4j
-  #     NEO4J_USERNAME: neo4j
-  #     NEO4J_PASSWORD: password
-  #   volumes:
-  #     - neo4j-data:/data
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "cypher-shell -a bolt://localhost:7687 -u $NEO4J_USERNAME -p $NEO4J_PASSWORD 'RETURN 1;' >/dev/null 2>&1 || exit 1"]
-  #     interval: 15s
-  #     timeout: 5s
-  #     retries: 10
-  #     start_period: 30s
-
   web:
     build:
       context: .
       dockerfile: Dockerfile
       args:
         RUBY_VERSION: 3.3.7
+      secrets:
+        - env
     depends_on:
-      db:
-        condition: service_healthy
       redis:
         condition: service_healthy
       memcached:
@@ -62,7 +30,7 @@ services:
       RAILS_ENV: production
       RACK_ENV: production
       ON_DOCKER: "yes"
-      DATABASE_URL: postgres://postgres:postgres@db:5432/zenodotus_production
+      DATABASE_URL: ${DATABASE_URL}
       REDISCLOUD_URL: redis://redis:6379/1
       MEMCACHIER_SERVERS: memcached:11211
       SECRET_KEY_BASE: ${SECRET_KEY_BASE:-devsecret}
@@ -72,6 +40,18 @@ services:
       RAILS_LOG_TO_STDOUT: "true"
       RAILS_SERVE_STATIC_FILES: "true"
       RUN_MIGRATIONS: "true"
+      KEY_ENCRYPTION_SALT: ${KEY_ENCRYPTION_SALT}
+      HYPATIA_SERVER_URL: ${HYPATIA_SERVER_URL}
+      HYPATIA_AUTH_KEY: ${HYPATIA_AUTH_KEY}
+      AUTH_BASE_HOST: ${AUTH_BASE_HOST}
+      MAIL_DOMAIN: ${MAIL_DOMAIN}
+      MAILGUN_API_KEY: ${MAILGUN_API_KEY}
+      OLLAMA_URL: ${OLLAMA_URL}
+      OLLAMA_PASSWORD: ${OLLAMA_PASSWORD}
+      FACTCHECK_TOOLS_API_KEY: ${FACTCHECK_TOOLS_API_KEY}
+      VIPS_WARNING: ${VIPS_WARNING}
+      CHROME_EXTENSION_ID: ${CHROME_EXTENSION_ID}
+      DEVISE_JWT_SECRET_KEY: ${DEVISE_JWT_SECRET_KEY}
       # S3 / Shrine
       AWS_REGION: ${AWS_REGION}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
@@ -98,7 +78,11 @@ services:
       start_period: 20s
 
   worker:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      secrets:
+        - env
     platform: linux/amd64
     depends_on:
       - web
@@ -106,7 +90,7 @@ services:
       RAILS_ENV: production
       RACK_ENV: production
       ON_DOCKER: "yes"
-      DATABASE_URL: postgres://postgres:postgres@db:5432/zenodotus_production
+      DATABASE_URL: ${DATABASE_URL}
       REDISCLOUD_URL: redis://redis:6379/1
       MEMCACHIER_SERVERS: memcached:11211
       SECRET_KEY_BASE: ${SECRET_KEY_BASE:-devsecret}
@@ -147,8 +131,9 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
 
 volumes:
-  db-data:
   redis-data:
   neo4j-data:
 
-
+secrets:
+  env:
+    file: .env

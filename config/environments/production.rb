@@ -28,7 +28,7 @@ Rails.application.configure do
   # config.assets.css_compressor = :purger
 
   # Do not fallback to assets pipeline if a precompiled asset is missed.
-  config.assets.compile = true
+  config.assets.compile = false
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
@@ -112,4 +112,5 @@ Rails.application.configure do
   config.hosts << Figaro.env.FACT_CHECK_INSIGHTS_HOST
   config.hosts << Figaro.env.MEDIA_VAULT_HOST
   config.hosts << Figaro.env.PUBLIC_LINK_HOST
+  config.hosts << "www.#{Figaro.env.FACT_CHECK_INSIGHTS_HOST}"
 end

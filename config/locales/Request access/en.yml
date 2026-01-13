@@ -1,7 +1,7 @@
 en:
   request_access:
     request_access: "Request access"
-    access_to_the_site: "Access to the site requires approval by the Duke Reporters’ Lab team. Approval is usually determined within approximately one week. The more detail you can provide about who you are and how you want to use the data, the better. If you have any questions,"
+    access_to_the_site: "Access to the site requires approval by the Fact-Check Insights team. Approval is usually determined within approximately one week. The more detail you can provide about who you are and how you want to use the data, the better. If you have any questions,"
     please_get_in_touch: "please get in touch."
     your_name: "Your name *"
     email_address: "Email address *"

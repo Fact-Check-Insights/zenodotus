@@ -32,9 +32,9 @@
 					<ol id="site-nav__account-menu" class="site-nav__links">
 						<% if current_user.can_access_media_vault? %>
 							<li>
-								<%= link_to media_vault_root_url, class: "btn btn--naked icon-prefixed" do %>
+								<%= link_to root_url(host: SiteDefinitions::MEDIA_VAULT[:host]), class: "btn btn--naked icon-prefixed" do %>
 									<%= use_svg "switch-lr", svg_attrs: { class: "icon icon--lg", aria: { hidden: true } } %>
-									<span><%= t("layout.header.switch_to", title: SiteDefinitions::MEDIA_VAULT[:title]) %></span>
+									<span><%= t("layouts.header.switch_to", title: SiteDefinitions::MEDIA_VAULT[:title]) %></span>
 								<% end %>
 							</li>
 						<% end %>

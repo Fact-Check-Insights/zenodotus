@@ -4,11 +4,11 @@
 		<div id="site-footer__legal">
 			<p><%= t("layouts.footer.is_a_project_of",
 									media_review_link: link_to("MediaVault", root_path),
-									reporters_lab_link: link_to("Duke Reporters’ Lab", "https://reporterslab.org/")).html_safe %></p>
+									full_fact_link: link_to("Full Fact", "https://fullfact.org/"),
+									maldita_link: link_to("Maldita.es", "https://maldita.es/")).html_safe %></p>
 			<p><%= t("layouts.footer.copyright",
-									reporters_lab_link: link_to("Duke Reporters’ Lab", "https://reporterslab.org/"),
 									current_year: l(Date.today, format: "%Y"),
-					 				createive_commons_link: link_to("CC BY", "https://creativecommons.org/licenses/by/4.0/")).html_safe %></p>
+					 				creative_commons_link: link_to("CC BY", "https://creativecommons.org/licenses/by/4.0/")).html_safe %></p>
 		</div>
 	</div>
 
@@ -40,7 +40,19 @@
 		</ol>
 	</nav>
 
-	<%= link_to "https://reporterslab.org/", id: "site-footer__reporters-lab-logo" do %>
-		<%= image_tag "logos/duke-reporters-lab-logo.png", size: "167x60", alt: "Duke Reporters’ Lab | Sanford School of Public Policy" %>
-	<% end %>
+	<nav id="site-footer__nav--logos" class="site-footer__nav">
+		<ol>
+			<li>
+				<%= link_to "https://fullfact.org/" do %>
+					<%= image_tag "logos/full-fact-logo.png", size: "96x60", alt: "Full Fact", id: "site-footer__full-fact-logo" %>
+				<% end %>
+			</li>
+			<li>
+				<%= link_to "https://maldita.es" do %>
+					<%= image_tag "logos/maldita-logo.png", size: "167x60", alt: "Maldita.es", id: "site-footer__maldita-logo" %>
+				<% end %>
+			</li>
+		</ol>
+	</nav>
+
 </footer>
