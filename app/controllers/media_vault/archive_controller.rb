@@ -62,9 +62,10 @@ class MediaVault::ArchiveController < MediaVaultController
   # A form for submitting URLs
   sig { void }
   def add
+    @myvault = params[:myvault].present?
     respond_to do |format|
       # Just a heads up, note that you have to properly render `turbo_stream`
-      format.turbo_stream { render turbo_stream: turbo_stream.replace("modal", partial: "media_vault/archive/add") }
+      format.turbo_stream { render turbo_stream: turbo_stream.replace("modal", partial: "media_vault/archive/add", locals: { myvault: @myvault }) }
       format.html { redirect_to media_vault_dashboard_path }
     end
   end
@@ -88,7 +89,7 @@ class MediaVault::ArchiveController < MediaVaultController
     # If there's no object_model then we don't have that URL
     if object_model.nil?
       respond_to do |format|
-        format.turbo_stream { render turbo_stream: turbo_stream.update("modal", partial: "media_vault/archive/add", locals: { error: "Unfortunately we do not currently support archiving of links from this URL" }) }
+        format.turbo_stream { render turbo_stream: turbo_stream.update("modal", partial: "media_vault/archive/add", locals: { error: "Unfortunately we do not currently support archiving of links from this URL", myvault: params[:myvault].present? }) }
         format.html do
           flash.now[:error] = { title: "Error Submitting Request", body: "Unfortunately we do not currently support archiving of links from this URL" }
           redirect_to media_vault_dashboard_path
@@ -99,13 +100,15 @@ class MediaVault::ArchiveController < MediaVaultController
     end
 
     # Try to start the scrape, otherwise... error out again
+    # If submitted from myvault or user checked the private checkbox, mark as private
+    is_private = params[:myvault].present? || params[:private] == "1"
     begin
-      object_model.create_from_url(url, current_user)
+      object_model.create_from_url(url, current_user, private: is_private)
     rescue StandardError => e
       Honeybadger.notify(e)
 
       respond_to do |format|
-        format.turbo_stream { render turbo_stream: turbo_stream.update("modal", partial: "media_vault/archive/add", locals: { error: "An unexpected error has been raised submitting your request. We've been notified and will be looking into it shortly." }) }
+        format.turbo_stream { render turbo_stream: turbo_stream.update("modal", partial: "media_vault/archive/add", locals: { error: "An unexpected error has been raised submitting your request. We've been notified and will be looking into it shortly.", myvault: params[:myvault].present? }) }
         format.html do
           flash.now[:error] = { title: "Error Submitting Request", body: "An unexpected error has been raised submitting your request. We've been notified and will be looking into it shortly." }
           redirect_to media_vault_dashboard_path
