@@ -9,6 +9,7 @@ class ApplicationController < ActionController::Base
 
   before_action :set_site_from_host
   before_action { @pagy_locale = params[:locale] }
+  before_action :require_privacy_policy_acceptance
   around_action :switch_locale
 
   sig { void }
@@ -91,6 +92,22 @@ protected
   sig { void }
   def set_site_from_host
     @site = get_site_from_host
+  end
+
+  sig { void }
+  def require_privacy_policy_acceptance
+    return unless current_user
+    return if current_user.privacy_policy_accepted?
+    return if controller_name == "privacy_policy_acceptance"
+    return if controller_name == "sessions" && action_name == "destroy"
+
+    # Allow users to view privacy policy and terms pages without accepting
+    return if controller_name == "application" && ["privacy", "terms"].include?(action_name)
+
+    # Allow MFA setup pages even if privacy policy not accepted
+    return if controller_name == "accounts" && ["setup_mfa", "start_webauthn_setup", "finish_webauthn_setup", "start_totp_setup", "finish_totp_setup", "setup_recovery_codes"].include?(action_name)
+
+    redirect_to privacy_policy_path, alert: "Please accept the updated privacy policy to continue."
   end
 
   sig { returns(T::Boolean) }
@@ -245,7 +262,8 @@ protected
 
     allowed_hosts = [ Figaro.env.FACT_CHECK_INSIGHTS_HOST,
                       Figaro.env.MEDIA_VAULT_HOST,
-                      Figaro.env.PUBLIC_LINK_HOST ]
+                      Figaro.env.PUBLIC_LINK_HOST,
+                      "www.#{Figaro.env.FACT_CHECK_INSIGHTS_HOST}" ]
 
     unless allowed_hosts.include?(uri.host)
       raise "Invalid origin host #{uri.scheme}://#{uri.host}"

@@ -28,7 +28,8 @@
 		flex-grow: 3;
 
 		border: 2px solid shared.$color--dark;
-		padding: var(--stat--spacing);;
+		padding: var(--stat--spacing);
+		;
 		align-items: center;
 		text-align: center;
 		white-space: nowrap;
@@ -92,13 +93,13 @@
 		border-bottom-style: solid;
 		transition-property: border-color;
 
-		> svg {
+		>svg {
 			max-width: 100%;
 			height: auto;
 			transition-property: transform;
 		}
 
-		&:hover > svg {
+		&:hover>svg {
 			transform: scale(1.1);
 		}
 
@@ -106,15 +107,12 @@
 			flex-basis: 50%;
 		}
 
-		@media screen and (min-width: shared.$screen-2xl-floor) {
-			flex-basis: 25%;
-		}
-
 	}
 
 	#project--fact-check-insights {
 		border-bottom-color: shared.$color--brand--fact-check-insights;
 	}
+
 	#project--fact-check-insights:hover {
 		border-bottom-color: shared.$color--tan-5;
 	}
@@ -122,6 +120,7 @@
 	#project--claim-review {
 		border-bottom-color: shared.$color--brand--claim-review;
 	}
+
 	#project--claim-review:hover {
 		border-bottom-color: shared.$color--blue-4;
 	}
@@ -129,6 +128,7 @@
 	#project--media-review {
 		border-bottom-color: shared.$color--brand--media-review;
 	}
+
 	#project--media-review:hover {
 		border-bottom-color: shared.$color--green-5;
 	}
@@ -136,6 +136,7 @@
 	#project--media-vault {
 		border-bottom-color: shared.$color--brand--media-vault;
 	}
+
 	#project--media-vault:hover {
 		border-bottom-color: shared.$color--orange-5;
 	}
@@ -184,7 +185,7 @@
 	background: shared.$color--dark url("photos/cameras.jpg") center center no-repeat;
 	background-size: cover;
 
-	> aside {
+	>aside {
 		box-sizing: content-box;
 		padding: 7vw;
 		max-width: 25ch;

@@ -13,7 +13,7 @@ Rails.application.routes.draw do
   end
 
   # constraints(lambda { |request| [Figaro.env.FACT_CHECK_INSIGHTS_HOST, Figaro.env.MEDIA_VAULT_HOST].include?(request.host) }) do
-  available_hosts = [Figaro.env.FACT_CHECK_INSIGHTS_HOST, Figaro.env.MEDIA_VAULT_HOST]
+  available_hosts = [Figaro.env.FACT_CHECK_INSIGHTS_HOST, Figaro.env.MEDIA_VAULT_HOST, "www.#{Figaro.env.FACT_CHECK_INSIGHTS_HOST}"]
   available_hosts << "www.example.com" if Rails.env.test? # Rail's default host for tests is www.example.com
 
   constraints host: available_hosts do
@@ -49,6 +49,10 @@ Rails.application.routes.draw do
     get "privacy", to: "application#privacy", as: "privacy"
     get "terms", to: "application#terms", as: "terms"
     get "select_locale/:locale", to: "application#select_locale", as: "select_locale"
+
+    # Privacy policy acceptance
+    get "privacy_policy", to: "privacy_policy_acceptance#show", as: "privacy_policy"
+    post "privacy_policy/accept", to: "privacy_policy_acceptance#accept", as: "accept_privacy_policy"
 
     scope "/apply" do
       get "/", to: "applicants#new", as: "new_applicant"
@@ -91,7 +95,7 @@ Rails.application.routes.draw do
     end
   end
 
-  available_hosts = [Figaro.env.FACT_CHECK_INSIGHTS_HOST]
+  available_hosts = [Figaro.env.FACT_CHECK_INSIGHTS_HOST, "www.#{Figaro.env.FACT_CHECK_INSIGHTS_HOST}"]
   available_hosts << "www.example.com" if Rails.env.test? # Rail's default host for tests is www.example.com
   constraints host: available_hosts do
     scope module: "fact_check_insights", as: "fact_check_insights" do

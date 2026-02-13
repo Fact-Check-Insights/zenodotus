@@ -39,6 +39,7 @@ module Zenodotus
     config.action_mailer.mailgun_settings = {
       api_key: Figaro.env.MAILGUN_API_KEY,
       domain: Figaro.env.MAIL_DOMAIN,
+      api_host: 'api.eu.mailgun.net',
     }
 
     config.force_ssl = ENV["FORCE_SSL"] == "true"

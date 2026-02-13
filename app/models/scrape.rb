@@ -124,6 +124,7 @@ class Scrape < ApplicationRecord
     unless removed || errored
       archive_item = ArchiveItem.model_for_url(self.url).create_from_hash(response, self.user)
       archive_item = archive_item.empty? ? nil : archive_item.first
+      archive_item&.update!(private: self.private) unless self.private.nil?
     end
 
     unless media_review_item.nil?

@@ -20,7 +20,7 @@ class AwsS3Downloader
   # Download single url that was sent from Hypatia
   sig { params(url: String).returns(String) }
   def self.download_file_in_s3_received_from_hypatia(url)
-    bucket_name = Figaro.env.AWS_S3_BUCKET_NAME_HYPATIA
+    bucket_name = Figaro.env.AWS_S3_BUCKET_NAME
     object_key = "#{Figaro.env.AWS_S3_PATH_HYPATIA}#{File.basename(url)}"
 
     download_from_s3(object_key, bucket_name, Rails.root.join("tmp", object_key).to_s)
@@ -31,7 +31,7 @@ private
   # A generic wrapper for downloading from any S3 bucket
   sig { params(object_key: String, bucket_name: String, local_path: String).returns(String) }
   def self.download_from_s3(object_key, bucket_name, local_path)
-    s3_client = Aws::S3::Client.new(region: Figaro.env.AWS_REGION)
+    s3_client = Aws::S3::Client.new(region: Figaro.env.AWS_REGION, endpoint: Figaro.env.S3_ENDPOINT)
 
     s3_client.get_object(
       response_target: local_path,

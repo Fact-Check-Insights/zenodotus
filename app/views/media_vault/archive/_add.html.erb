@@ -17,6 +17,8 @@
           <% end %>
 
           <%= form_with url: media_vault_archive_add_path, class: "form__field" do |f| %>
+            <% is_myvault = local_assigns.fetch(:myvault, false) %>
+            <%= f.hidden_field :myvault, value: is_myvault ? "true" : "" %>
             <div class="search-box__form--text">
               <fieldset class="search-box__fieldset" data-media-vault--search-box-target="searchByTextFieldset" style="margin-right: 10%">
                 <%= f.label :url_to_archive, t("dashboard.url_to_archive"), class: "search-box__form__label" %>
@@ -26,6 +28,12 @@
               <div class="search-box__toggle-mode-message">
                 <%= t("dashboard.archive_a_url_of_a_social_media") %>
               </div>
+              <% unless is_myvault %>
+                <div class="mt-4">
+                  <%= f.check_box :private, class: "mr-2" %>
+                  <%= f.label :private, "Save to MyVault only (private)" %>
+                </div>
+              <% end %>
             </div>
           <% end %>
 
