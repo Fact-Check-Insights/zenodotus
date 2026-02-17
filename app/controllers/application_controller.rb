@@ -232,7 +232,7 @@ protected
     # First we make sure they're logged in at all, this also sets the current user so we can check it
     authenticate_user_and_setup!
 
-    unless current_user.is_admin?
+    unless current_user&.is_admin?
       redirect_back_or_to "/", allow_other_host: false, flash: { error: "You don’t have permission to access that page." }
     end
   end
