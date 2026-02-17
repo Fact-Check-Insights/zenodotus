@@ -275,3 +275,6 @@ gem "skylight"
 # Logging
 gem "amazing_print"
 gem "rails_semantic_logger"
+
+# reCAPTCHA Enterprise for bot protection on public forms
+gem "google-cloud-recaptcha_enterprise"

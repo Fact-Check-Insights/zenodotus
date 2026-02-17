@@ -19,6 +19,12 @@ class ApplicantsController < ApplicationController
 
   sig { void }
   def create
+    # Verify reCAPTCHA token before processing the application
+    unless verify_recaptcha_token(params["g-recaptcha-response"])
+      @applicant = Applicant.new
+      generic_create_error && return
+    end
+
     begin
       # Verify the types of the values provided in the request.
       # TODO: Actually use the output of this, if possible.
@@ -140,5 +146,29 @@ private
   sig { void }
   def send_confirmation_email
     @applicant.send_confirmation_email(@site)
+  end
+
+  sig { params(token: T.nilable(String)).returns(T::Boolean) }
+  def verify_recaptcha_token(token)
+    return false if token.blank?
+
+    client = ::Google::Cloud::RecaptchaEnterprise.recaptcha_enterprise_service
+    response = client.create_assessment(
+      parent: "projects/#{Figaro.env.RECAPTCHA_PROJECT_ID}",
+      assessment: {
+        event: {
+          site_key: Figaro.env.RECAPTCHA_SITE_KEY,
+          token: token
+        }
+      }
+    )
+
+    return false unless response.token_properties.valid
+    return false unless response.token_properties.action == "apply"
+
+    response.risk_analysis.score >= 0.5
+  rescue StandardError => e
+    Rails.logger.error("reCAPTCHA verification failed: #{e.message}")
+    false
   end
 end

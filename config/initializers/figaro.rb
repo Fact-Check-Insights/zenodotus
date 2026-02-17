@@ -20,6 +20,10 @@ Figaro.require_keys("AUTH_BASE_HOST") # This is used by MFA as the site id
 Figaro.require_keys("MAIL_DOMAIN")
 Figaro.require_keys("MAILGUN_API_KEY")
 
+# reCAPTCHA Enterprise
+Figaro.require_keys("RECAPTCHA_SITE_KEY")
+Figaro.require_keys("RECAPTCHA_PROJECT_ID")
+
 # Public links
 Figaro.require_keys("PUBLIC_LINK_HOST")
 
