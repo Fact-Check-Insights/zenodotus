@@ -98,19 +98,22 @@
 		</fieldset>
 		<%= hidden_field_tag "g-recaptcha-response", nil, id: "g-recaptcha-response" %>
 		<div class="form__align-with-fields">
-			<button type="submit"
-				class="g-recaptcha btn btn--submit"
-				data-sitekey="<%= Figaro.env.RECAPTCHA_SITE_KEY %>"
-				data-callback="onRecaptchaSubmit"
-				data-action="apply">
-				<%= t("request_access.submit_request") %>
-			</button>
+			<%= submit_tag(
+				t("request_access.submit_request"),
+				class: "btn btn--submit",
+				id: "apply-submit-btn"
+			) %>
 		</div>
 		<script>
-			function onRecaptchaSubmit(token) {
-				document.getElementById("g-recaptcha-response").value = token;
-				document.getElementById("g-recaptcha-response").closest("form").submit();
-			}
+			document.getElementById("apply-submit-btn").addEventListener("click", function(e) {
+				e.preventDefault();
+				grecaptcha.enterprise.ready(function() {
+					grecaptcha.enterprise.execute("<%= Figaro.env.RECAPTCHA_SITE_KEY %>", { action: "apply" }).then(function(token) {
+						document.getElementById("g-recaptcha-response").value = token;
+						document.getElementById("apply-submit-btn").closest("form").submit();
+					});
+				});
+			});
 		</script>
 	<% end %>
 </div>
