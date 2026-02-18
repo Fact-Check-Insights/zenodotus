@@ -150,7 +150,10 @@ private
 
   sig { params(token: T.nilable(String)).returns(T::Boolean) }
   def verify_recaptcha_token(token)
-    return false if token.blank?
+    if token.blank?
+      Rails.logger.error("reCAPTCHA verification failed: token is blank")
+      return false
+    end
 
     client = ::Google::Cloud::RecaptchaEnterprise.recaptcha_enterprise_service
     response = client.create_assessment(
@@ -163,12 +166,27 @@ private
       }
     )
 
-    return false unless response.token_properties.valid
-    return false unless response.token_properties.action == "apply"
+    unless response.token_properties.valid
+      Rails.logger.error("reCAPTCHA verification failed: token invalid, reason=#{response.token_properties.invalid_reason}")
+      return false
+    end
 
-    response.risk_analysis.score >= 0.5
+    unless response.token_properties.action == "apply"
+      Rails.logger.error("reCAPTCHA verification failed: action mismatch, expected=apply got=#{response.token_properties.action}")
+      return false
+    end
+
+    score = response.risk_analysis.score
+    Rails.logger.info("reCAPTCHA score=#{score} for action=apply")
+
+    if score < 0.5
+      Rails.logger.error("reCAPTCHA verification failed: score #{score} below threshold 0.5")
+      return false
+    end
+
+    true
   rescue StandardError => e
-    Rails.logger.error("reCAPTCHA verification failed: #{e.message}")
+    Rails.logger.error("reCAPTCHA verification failed: #{e.class}: #{e.message}")
     false
   end
 end
