@@ -96,11 +96,43 @@
 					</div>
 			</div>
 		</fieldset>
+		<%= hidden_field_tag "g-recaptcha-response", nil, id: "g-recaptcha-response" %>
 		<div class="form__align-with-fields">
-			<%= f.submit(
+			<%= submit_tag(
 				t("request_access.submit_request"),
 				class: "btn btn--submit",
+				id: "apply-submit-btn"
 			) %>
 		</div>
+		<script>
+			(function() {
+				var siteKey = "<%= Figaro.env.RECAPTCHA_SITE_KEY %>";
+				var scriptUrl = "https://www.google.com/recaptcha/enterprise.js?render=" + siteKey;
+
+				function bindSubmit() {
+					var btn = document.getElementById("apply-submit-btn");
+					if (!btn || btn.dataset.recaptchaBound) return;
+					btn.dataset.recaptchaBound = "true";
+					btn.addEventListener("click", function(e) {
+						e.preventDefault();
+						grecaptcha.enterprise.ready(function() {
+							grecaptcha.enterprise.execute(siteKey, { action: "apply" }).then(function(token) {
+								document.getElementById("g-recaptcha-response").value = token;
+								btn.closest("form").submit();
+							});
+						});
+					});
+				}
+
+				if (typeof grecaptcha !== "undefined" && grecaptcha.enterprise) {
+					bindSubmit();
+				} else {
+					var script = document.createElement("script");
+					script.src = scriptUrl;
+					script.onload = bindSubmit;
+					document.head.appendChild(script);
+				}
+			})();
+		</script>
 	<% end %>
 </div>
