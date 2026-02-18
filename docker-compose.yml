@@ -30,7 +30,6 @@ services:
       RAILS_ENV: production
       RACK_ENV: production
       ON_DOCKER: "yes"
-      DATABASE_URL: ${DATABASE_URL}
       REDISCLOUD_URL: redis://redis:6379/1
       MEMCACHIER_SERVERS: memcached:11211
       SECRET_KEY_BASE: ${SECRET_KEY_BASE:-devsecret}
@@ -52,6 +51,10 @@ services:
       VIPS_WARNING: ${VIPS_WARNING}
       CHROME_EXTENSION_ID: ${CHROME_EXTENSION_ID}
       DEVISE_JWT_SECRET_KEY: ${DEVISE_JWT_SECRET_KEY}
+      # reCAPTCHA Enterprise
+      RECAPTCHA_SITE_KEY: ${RECAPTCHA_SITE_KEY}
+      RECAPTCHA_PROJECT_ID: ${RECAPTCHA_PROJECT_ID}
+      GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
       # S3 / Shrine
       AWS_REGION: ${AWS_REGION}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
@@ -90,7 +93,6 @@ services:
       RAILS_ENV: production
       RACK_ENV: production
       ON_DOCKER: "yes"
-      DATABASE_URL: ${DATABASE_URL}
       REDISCLOUD_URL: redis://redis:6379/1
       MEMCACHIER_SERVERS: memcached:11211
       SECRET_KEY_BASE: ${SECRET_KEY_BASE:-devsecret}
