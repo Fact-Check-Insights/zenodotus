@@ -18,7 +18,6 @@
 
 		<%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
 		<%= javascript_importmap_tags %>
-		<script src="https://www.google.com/recaptcha/enterprise.js?render=<%= Figaro.env.RECAPTCHA_SITE_KEY %>"></script>
     <%= hotwire_livereload_tags if Rails.env.development? %>
 	</head>
 
