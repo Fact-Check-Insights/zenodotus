@@ -1,5 +1,6 @@
 services:
   redis:
+    restart: always
     image: redis:7
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
@@ -11,9 +12,11 @@ services:
       retries: 5
 
   memcached:
+    restart: always
     image: memcached:1.6
 
   web:
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile
@@ -81,6 +84,7 @@ services:
       start_period: 20s
 
   worker:
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile
@@ -123,6 +127,7 @@ services:
       retries: 5
 
   caddy:
+    restart: always
     image: caddy:2
     depends_on:
       - web
