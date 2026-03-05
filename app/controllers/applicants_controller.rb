@@ -45,8 +45,11 @@ class ApplicantsController < ApplicationController
     @applicant = Applicant.new(decorated_params)
 
     existing_user = User.readonly.find_by(email: @applicant[:email]&.downcase)
-    # We intentionally return a generic error to avoid leaking the existence of the user.
-    (generic_create_error && return) if existing_user
+    if existing_user
+      send_duplicate_registration_email
+      redirect_to applicant_confirmation_sent_path
+      return
+    end
 
     begin
       @applicant.save!
@@ -55,7 +58,6 @@ class ApplicantsController < ApplicationController
     end
 
     send_confirmation_email
-
     redirect_to applicant_confirmation_sent_path
   end
 
@@ -146,6 +148,14 @@ private
   sig { void }
   def send_confirmation_email
     @applicant.send_confirmation_email(@site)
+  end
+
+  sig { void }
+  def send_duplicate_registration_email
+    ApplicantsMailer.with(
+      site: @site,
+      email: @applicant[:email]
+    ).duplicate_registration_email.deliver_now
   end
 
   sig { params(token: T.nilable(String)).returns(T::Boolean) }

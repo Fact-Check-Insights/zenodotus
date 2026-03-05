@@ -1,0 +1,14 @@
+Someone (hopefully you) tried to create an account on <%= @site[:title] %> using this email address.
+
+You already have an account. You can sign in here: <%= new_user_session_url(host: @site[:host]) %>
+
+If you've forgotten your password, you can reset it here: <%= reset_password_url(host: @site[:host]) %>
+
+If this wasn't you, you can safely ignore this email.
+
+MediaVault powered by Full Fact and Fundación Maldita.es
+
+---
+
+Terms and Conditions: https://vault.factcheckinsights.org/terms
+Privacy Policy: https://vault.factcheckinsights.org/privacy

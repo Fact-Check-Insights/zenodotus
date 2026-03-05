@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+	</head>
+	<body>
+		<p>Someone (hopefully you) tried to create an account on <%= @site[:title] %> using this email address.</p>
+		<p>You already have an account. You can <%= link_to "sign in here", new_user_session_url(host: @site[:host]) %>.</p>
+		<p>If you've forgotten your password, you can <%= link_to "reset it here", reset_password_url(host: @site[:host]) %>.</p>
+		<p>If this wasn't you, you can safely ignore this email.</p>
+		<p>MediaVault powered by <a href="https://fullfact.org">Full Fact</a> and <a href="https://fundacionmaldita.es/en/">Fundación Maldita.es</a></p>
+		<hr>
+		<p><a href="https://vault.factcheckinsights.org/terms">Read the terms and conditions of the platform</a></p>
+		<p><a href="https://vault.factcheckinsights.org/privacy">Learn about the privacy policy</a></p>
+	</body>
+</html>
