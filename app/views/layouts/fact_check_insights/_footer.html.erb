@@ -28,7 +28,7 @@
 			<li><%= link_to "Privacy Policy", privacy_path %></li>
 			<li><%= link_to "Opt Out", fact_check_insights_optout_path %></li>
 			<%# <li><%= link_to "GitHub", "https://github.com/TechAndCheck/zenodotus/" %></li>
-			<li><%= link_to "MediaVault", media_vault_root_url %></li>
+			<li><%= link_to "MediaVault", media_vault_root_url(host: Figaro.env.MEDIA_VAULT_HOST) %></li>
 		</ol>
 	</nav>
 

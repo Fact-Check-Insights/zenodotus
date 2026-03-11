@@ -36,7 +36,7 @@
 			<li><%= link_to t("layouts.footer.privacy_policy"), privacy_path %></li>
 			<li><%= link_to t("layouts.footer.opt_out"), media_vault_optout_path %></li>
 			<%# <li><%= link_to "GitHub", "https://github.com/TechAndCheck/zenodotus/" %></li>
-			<li><%= link_to "Fact-Check Insights", fact_check_insights_root_url %></li>
+			<li><%= link_to "Fact-Check Insights", fact_check_insights_root_url(host: Figaro.env.FACT_CHECK_INSIGHTS_HOST) %></li>
 		</ol>
 	</nav>
 
