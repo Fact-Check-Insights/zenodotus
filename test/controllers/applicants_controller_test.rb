@@ -48,7 +48,7 @@ class ApplicantsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
   end
 
-  test "should not allow applying with existing user email" do
+  test "should redirect to confirmation page when applying with existing user email" do
     user = users(:user)
 
     post applicants_url(applicant: {
@@ -58,10 +58,14 @@ class ApplicantsControllerTest < ActionDispatch::IntegrationTest
       accepted_terms: "1",
     })
 
-    assert_response :bad_request
+    assert_redirected_to applicant_confirmation_sent_url
+
+    email = ActionMailer::Base.deliveries.last
+    assert_equal [user.email], email.to
+    assert_includes email.subject, "account"
   end
 
-  test "should not allow applying with existing user email in different case" do
+  test "should redirect to confirmation page when applying with existing user email in different case" do
     user = users(:user)
 
     post applicants_url(applicant: {
@@ -71,7 +75,24 @@ class ApplicantsControllerTest < ActionDispatch::IntegrationTest
       accepted_terms: "1",
     })
 
-    assert_response :bad_request
+    assert_redirected_to applicant_confirmation_sent_url
+
+    email = ActionMailer::Base.deliveries.last
+    assert_equal [user.email.downcase], email.to
+    assert_includes email.subject, "account"
+  end
+
+  test "should not create an applicant when applying with existing user email" do
+    user = users(:user)
+
+    assert_no_difference "Applicant.count" do
+      post applicants_url(applicant: {
+        name: "Jane Doe",
+        email: user.email,
+        use_case: "Journalism?",
+        accepted_terms: "1",
+      })
+    end
   end
 
   test "should lowercase email address during creation" do
