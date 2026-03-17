@@ -20,6 +20,9 @@ class ApplicantTest < ActiveSupport::TestCase
     @applicant.use_case = "Journalism and fact-checking."
     assert_not @applicant.valid?
 
+    @applicant.commercial_use = false
+    assert_not @applicant.valid?
+
     @applicant.accepted_terms = true
     assert_predicate @applicant, :valid?
 
@@ -35,6 +38,7 @@ class ApplicantTest < ActiveSupport::TestCase
       accepted_terms_at: Time.now,
       accepted_terms_version: TermsOfService::CURRENT_VERSION,
       confirmation_token: Devise.friendly_token,
+      commercial_use: false,
     })
 
     assert_equal applicant.email.downcase, applicant.email
@@ -57,6 +61,7 @@ class ApplicantTest < ActiveSupport::TestCase
       accepted_terms_at: Time.now,
       accepted_terms_version: TermsOfService::CURRENT_VERSION,
       confirmation_token: Devise.friendly_token,
+      commercial_use: false,
     })
 
     assert_emails 1 do
@@ -206,6 +211,87 @@ class ApplicantTest < ActiveSupport::TestCase
     confirmed_applicant.reload
 
     assert_equal admin, confirmed_applicant.reviewer
+  end
+
+  test "validates organization_type inclusion" do
+    applicant = Applicant.new(
+      name: "John Doe",
+      email: "john@example.com",
+      use_case: "Research",
+      accepted_terms: true,
+      commercial_use: false,
+      organization_type: "Invalid Type"
+    )
+    assert_not applicant.valid?
+    assert applicant.errors[:organization_type].any?
+
+    applicant.organization_type = "University"
+    assert_predicate applicant, :valid?
+  end
+
+  test "validates primary_role inclusion on create" do
+    applicant = Applicant.new(
+      name: "John Doe",
+      email: "john@example.com",
+      use_case: "Research",
+      accepted_terms: true,
+      commercial_use: false,
+      primary_role: "Invalid Role"
+    )
+    assert_not applicant.valid?
+    assert applicant.errors[:primary_role].any?
+
+    applicant.primary_role = "Researcher"
+    assert_predicate applicant, :valid?
+  end
+
+  test "requires organization_type_other when organization_type is Other" do
+    applicant = Applicant.new(
+      name: "John Doe",
+      email: "john@example.com",
+      use_case: "Research",
+      accepted_terms: true,
+      commercial_use: false,
+      organization_type: "Other"
+    )
+    assert_not applicant.valid?
+    assert applicant.errors[:organization_type_other].any?
+
+    applicant.organization_type_other = "My custom org"
+    assert_predicate applicant, :valid?
+  end
+
+  test "requires primary_role_other when primary_role is Other" do
+    applicant = Applicant.new(
+      name: "John Doe",
+      email: "john@example.com",
+      use_case: "Research",
+      accepted_terms: true,
+      commercial_use: false,
+      primary_role: "Other"
+    )
+    assert_not applicant.valid?
+    assert applicant.errors[:primary_role_other].any?
+
+    applicant.primary_role_other = "My custom role"
+    assert_predicate applicant, :valid?
+  end
+
+  test "requires commercial_use to be set" do
+    applicant = Applicant.new(
+      name: "John Doe",
+      email: "john@example.com",
+      use_case: "Research",
+      accepted_terms: true
+    )
+    assert_not applicant.valid?
+    assert applicant.errors[:commercial_use].any?
+
+    applicant.commercial_use = false
+    assert_predicate applicant, :valid?
+
+    applicant.commercial_use = true
+    assert_predicate applicant, :valid?
   end
 
   test "sends email to admins when confirmed" do

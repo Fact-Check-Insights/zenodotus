@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_02_222643) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_17_211014) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
   enable_extension "pgcrypto"
@@ -96,6 +96,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_02_222643) do
     t.uuid "user_id"
     t.string "source_site"
     t.uuid "reviewer_id"
+    t.string "organization_type"
+    t.string "organization_type_other"
+    t.string "primary_role_other"
+    t.boolean "commercial_use"
     t.index ["confirmation_token"], name: "index_applicants_on_confirmation_token", unique: true
     t.index ["reviewer_id"], name: "index_applicants_on_reviewer_id"
     t.index ["user_id"], name: "index_applicants_on_user_id"

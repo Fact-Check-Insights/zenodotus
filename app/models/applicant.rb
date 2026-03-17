@@ -1,4 +1,23 @@
 class Applicant < ApplicationRecord
+  ORGANIZATION_TYPES = [
+    "Fact-checking organisation",
+    "For-profit Media outlet",
+    "Non-profit media outlet",
+    "Private Company (non-tech)",
+    "Tech Company",
+    "Research center",
+    "University",
+    "Other"
+  ].freeze
+
+  PRIMARY_ROLES = [
+    "Journalist",
+    "Fact-checker",
+    "Researcher",
+    "Developer",
+    "Other"
+  ].freeze
+
   # This relationship is optional because not all applicants will become users.
   belongs_to :user, optional: true
 
@@ -21,6 +40,11 @@ class Applicant < ApplicationRecord
   validates :use_case, presence: true
   validates :accepted_terms, acceptance: { message: "Terms must be accepted." }
   validates :confirmation_token, uniqueness: true
+  validates :organization_type, inclusion: { in: ORGANIZATION_TYPES, allow_blank: true }
+  validates :primary_role, inclusion: { in: PRIMARY_ROLES, allow_blank: true }, on: :create
+  validates :commercial_use, inclusion: { in: [true, false] }
+  validate :organization_type_other_required_when_other
+  validate :primary_role_other_required_when_other
 
   after_initialize :map_terms_database_values_to_accessor
   before_create :map_terms_accessor_to_database_values
@@ -150,6 +174,20 @@ class Applicant < ApplicationRecord
   end
 
 private
+
+  sig { void }
+  def organization_type_other_required_when_other
+    if organization_type == "Other" && organization_type_other.blank?
+      errors.add(:organization_type_other, "must be provided when organisation type is 'Other'")
+    end
+  end
+
+  sig { void }
+  def primary_role_other_required_when_other
+    if primary_role == "Other" && primary_role_other.blank?
+      errors.add(:primary_role_other, "must be provided when primary role is 'Other'")
+    end
+  end
 
   sig { void }
   def downcase_email!
