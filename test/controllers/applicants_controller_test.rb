@@ -23,6 +23,7 @@ class ApplicantsControllerTest < ActionDispatch::IntegrationTest
       email: "applicant@example.com",
       use_case: "Journalism?",
       accepted_terms: "1",
+      commercial_use: "false",
     })
 
     assert Applicant.find_by(email: "applicant@example.com")
@@ -35,6 +36,7 @@ class ApplicantsControllerTest < ActionDispatch::IntegrationTest
       email: "applicant@example.com",
       use_case: "Journalism?",
       accepted_terms: "1",
+      commercial_use: "false",
     })
 
     assert_redirected_to applicant_confirmation_sent_url
@@ -56,6 +58,7 @@ class ApplicantsControllerTest < ActionDispatch::IntegrationTest
       email: user.email,
       use_case: "Journalism?",
       accepted_terms: "1",
+      commercial_use: "false",
     })
 
     assert_redirected_to applicant_confirmation_sent_url
@@ -73,6 +76,7 @@ class ApplicantsControllerTest < ActionDispatch::IntegrationTest
       email: user.email.upcase,
       use_case: "Journalism?",
       accepted_terms: "1",
+      commercial_use: "false",
     })
 
     assert_redirected_to applicant_confirmation_sent_url
@@ -91,6 +95,7 @@ class ApplicantsControllerTest < ActionDispatch::IntegrationTest
         email: user.email,
         use_case: "Journalism?",
         accepted_terms: "1",
+        commercial_use: "false",
       })
     end
   end
@@ -104,6 +109,7 @@ class ApplicantsControllerTest < ActionDispatch::IntegrationTest
       email: email_upcase,
       use_case: "Journalism?",
       accepted_terms: "1",
+      commercial_use: "false",
     })
 
     assert_nil Applicant.find_by(email: email_upcase)
@@ -119,6 +125,7 @@ class ApplicantsControllerTest < ActionDispatch::IntegrationTest
       email: "applicant-insights@example.com",
       use_case: "Journalism?",
       accepted_terms: "1",
+      commercial_use: "false",
     })
     applicant = Applicant.find_by(email: "applicant-insights@example.com")
 
@@ -133,10 +140,53 @@ class ApplicantsControllerTest < ActionDispatch::IntegrationTest
       email: "applicant-vault@example.com",
       use_case: "Journalism?",
       accepted_terms: "1",
+      commercial_use: "false",
     })
     applicant = Applicant.find_by(email: "applicant-vault@example.com")
 
     assert_equal SiteDefinitions::MEDIA_VAULT[:shortname], applicant[:source_site]
+  end
+
+  test "creates an applicant with all new fields" do
+    post applicants_url(applicant: {
+      name: "Jane Doe",
+      email: "newfields@example.com",
+      use_case: "Journalism?",
+      accepted_terms: "1",
+      organization_type: "University",
+      primary_role: "Researcher",
+      commercial_use: "false",
+    })
+
+    applicant = Applicant.find_by(email: "newfields@example.com")
+    assert applicant
+    assert_equal "University", applicant.organization_type
+    assert_equal "Researcher", applicant.primary_role
+    assert_equal false, applicant.commercial_use
+    assert_redirected_to applicant_confirmation_sent_url
+  end
+
+  test "creates an applicant with Other fields" do
+    post applicants_url(applicant: {
+      name: "Jane Doe",
+      email: "otherfields@example.com",
+      use_case: "Journalism?",
+      accepted_terms: "1",
+      organization_type: "Other",
+      organization_type_other: "Custom org",
+      primary_role: "Other",
+      primary_role_other: "Custom role",
+      commercial_use: "true",
+    })
+
+    applicant = Applicant.find_by(email: "otherfields@example.com")
+    assert applicant
+    assert_equal "Other", applicant.organization_type
+    assert_equal "Custom org", applicant.organization_type_other
+    assert_equal "Other", applicant.primary_role
+    assert_equal "Custom role", applicant.primary_role_other
+    assert_equal true, applicant.commercial_use
+    assert_redirected_to applicant_confirmation_sent_url
   end
 
   test "can confirm an applicant" do

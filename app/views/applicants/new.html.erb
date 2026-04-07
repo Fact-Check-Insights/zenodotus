@@ -42,6 +42,66 @@
 						<div class="field__description"><%= t("request_access.youll_need_to_confirm") %></div>
 					</div>
 					<div class="field__wrapper--input">
+						<%= f.label :affiliation do %>
+							<%= t("request_access.organization_affiliation") %> <span style="font-weight:normal"><%= t("request_access.if_any") %></span>
+						<% end %>
+						<%= f.text_field :affiliation %>
+						<div class="field__description"><%= t("request_access.if_you_will_be_using") %></div>
+					</div>
+					<div class="field__wrapper--input">
+						<%= f.label(
+							:organization_type,
+							t("request_access.type_of_organisation")) %>
+						<%= f.select(
+							:organization_type,
+							options_for_select(Applicant::ORGANIZATION_TYPES, @applicant.organization_type),
+							{ include_blank: true }) %>
+						<%= errors_for_field(
+							@applicant,
+							:organization_type) %>
+					</div>
+					<div class="field__wrapper--input" id="organization-type-other-wrapper" style="display:none;">
+						<%= f.label(
+							:organization_type_other,
+							t("request_access.if_other_please_specify")) %>
+						<%= f.text_field(:organization_type_other) %>
+						<%= errors_for_field(
+							@applicant,
+							:organization_type_other) %>
+					</div>
+					<div class="field__wrapper--input">
+						<%= f.label(
+							:primary_role,
+							t("request_access.what_is_your_primary_role")) %>
+						<%= f.select(
+							:primary_role,
+							options_for_select(Applicant::PRIMARY_ROLES, @applicant.primary_role),
+							{ include_blank: true }) %>
+						<%= errors_for_field(
+							@applicant,
+							:primary_role) %>
+					</div>
+					<div class="field__wrapper--input" id="primary-role-other-wrapper" style="display:none;">
+						<%= f.label(
+							:primary_role_other,
+							t("request_access.if_other_please_specify")) %>
+						<%= f.text_field(:primary_role_other) %>
+						<%= errors_for_field(
+							@applicant,
+							:primary_role_other) %>
+					</div>
+					<div class="field__wrapper--input">
+						<%= f.label(
+							:country,
+							t("request_access.where_are_you_located")) %>
+						<%= f.country_select(
+							:country,
+							include_blank: true) %>
+						<%= errors_for_field(
+							@applicant,
+							:country) %>
+					</div>
+					<div class="field__wrapper--input">
 						<%= f.label(
 							:use_case,
 							t("request_access.how_do_you_plan_to_use_the_data")) %>
@@ -54,31 +114,22 @@
 							:use_case) %>
 					</div>
 					<div class="field__wrapper--input">
-						<%= f.label :affiliation do %>
-							<%= t("request_access.organization_affiliation") %> <span style="font-weight:normal"><%= t("request_access.if_any") %></span>
-						<% end %>
-						<%= f.text_field :affiliation %>
-						<div class="field__description"><%= t("request_access.if_you_will_be_using") %></div>
-					</div>
-					<div class="field__wrapper--input">
-						<%= f.label(
-							:primary_role,
-							t("request_access.what_is_your_primary_role")) %>
-						<%= f.text_field(
-							:primary_role,
-							placeholder:
-							t("request_access.fact-checker_researcher_etc")) %>
-					</div>
-					<div class="field__wrapper--input">
-						<%= f.label(
-							:country,
-							t("request_access.where_are_you_located")) %>
-						<%= f.country_select(
-							:country,
-							include_blank: true) %>
+						<fieldset>
+							<legend><%= t("request_access.commercial_use_question") %></legend>
+							<div style="display:flex; gap:1.5rem;">
+								<div>
+									<%= f.radio_button(:commercial_use, "true") %>
+									<%= f.label(:commercial_use_true, t("request_access.yes")) %>
+								</div>
+								<div>
+									<%= f.radio_button(:commercial_use, "false") %>
+									<%= f.label(:commercial_use_false, t("request_access.no")) %>
+								</div>
+							</div>
+						</fieldset>
 						<%= errors_for_field(
 							@applicant,
-							:country) %>
+							:commercial_use) %>
 					</div>
 					<div class="field__wrapper--checkboxes">
 						<div class="checkbox">
@@ -105,6 +156,21 @@
 			) %>
 		</div>
 		<script>
+			(function() {
+				function setupConditionalField(selectId, wrapperId) {
+					var select = document.getElementById(selectId);
+					var wrapper = document.getElementById(wrapperId);
+					if (!select || !wrapper) return;
+					function toggle() {
+						wrapper.style.display = select.value === "Other" ? "" : "none";
+					}
+					select.addEventListener("change", toggle);
+					toggle();
+				}
+				setupConditionalField("applicant_organization_type", "organization-type-other-wrapper");
+				setupConditionalField("applicant_primary_role", "primary-role-other-wrapper");
+			})();
+
 			(function() {
 				var siteKey = "<%= Figaro.env.RECAPTCHA_SITE_KEY %>";
 				var scriptUrl = "https://www.google.com/recaptcha/enterprise.js?render=" + siteKey;

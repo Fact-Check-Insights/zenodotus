@@ -8,11 +8,13 @@
     <hr>
     <p>Name: <%= @applicant.name %></p>
     <p>Affiliation: <%= @applicant.affiliation %></p>
-    <p>Primary Role: <%= @applicant.primary_role %></p>
+    <p>Type of Organisation: <%= @applicant.organization_type %><%= " (#{@applicant.organization_type_other})" if @applicant.organization_type == "Other" && @applicant.organization_type_other.present? %></p>
+    <p>Primary Role: <%= @applicant.primary_role %><%= " (#{@applicant.primary_role_other})" if @applicant.primary_role == "Other" && @applicant.primary_role_other.present? %></p>
     <p>Country: <%= @applicant.country %></p>
     <p>Email: <%= @applicant.email %></p>
     <p>Time of Request: <%= @applicant.created_at %></p>
     <p>Use Case: <%= @applicant.use_case %></p>
+    <p>Commercial Use: <%= @applicant.commercial_use? ? "Yes" : "No" %></p>
 
     <hr>
 

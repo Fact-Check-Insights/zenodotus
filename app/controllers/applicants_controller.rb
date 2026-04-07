@@ -13,6 +13,10 @@ class ApplicantsController < ApplicationController
     const :country, T.nilable(String)
     const :affiliation, T.nilable(String)
     const :primary_role, T.nilable(String)
+    const :primary_role_other, T.nilable(String)
+    const :organization_type, T.nilable(String)
+    const :organization_type_other, T.nilable(String)
+    const :commercial_use, T.nilable(String)
     const :use_case, T.nilable(String)
     const :accepted_terms, String
   end
@@ -122,6 +126,10 @@ private
       :country,
       :affiliation,
       :primary_role,
+      :primary_role_other,
+      :organization_type,
+      :organization_type_other,
+      :commercial_use,
       :use_case,
       :accepted_terms
     )

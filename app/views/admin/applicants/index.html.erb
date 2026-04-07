@@ -22,8 +22,12 @@
 						<dd><%= or_na(applicant.affiliation) %></dd>
 					</div>
 					<div class="applicant__detail">
+						<dt>Type of organisation</dt>
+						<dd><%= or_na(applicant.organization_type) %><%= " (#{applicant.organization_type_other})" if applicant.organization_type == "Other" && applicant.organization_type_other.present? %></dd>
+					</div>
+					<div class="applicant__detail">
 						<dt>Primary role</dt>
-						<dd><%= or_na(applicant.primary_role) %></dd>
+						<dd><%= or_na(applicant.primary_role) %><%= " (#{applicant.primary_role_other})" if applicant.primary_role == "Other" && applicant.primary_role_other.present? %></dd>
 					</div>
 					<div class="applicant__detail">
 						<dt>Applied for</dt>
@@ -45,6 +49,10 @@
 					<div class="applicant__detail">
 						<dt>Country</dt>
 						<dd><%= or_na(applicant.country) %></dd>
+					</div>
+					<div class="applicant__detail">
+						<dt>Commercial use</dt>
+						<dd><%= applicant.commercial_use? ? "Yes" : "No" %></dd>
 					</div>
 				</dl>
 				<div class="applicant__actions">
@@ -100,8 +108,10 @@
 			<tr>
 				<th>Name</th>
 				<th>Affiliation</th>
+				<th>Org type</th>
 				<th>Primary role</th>
 				<th>Use case</th>
+				<th>Commercial</th>
 				<th>Country</th>
 				<th>Applied for</th>
 				<th>Status</th>
@@ -117,8 +127,10 @@
 					<%= mail_to applicant.email, class: "subtle" %>
 				</td>
 				<td><%= applicant.affiliation %></td>
+				<td><%= applicant.organization_type %></td>
 				<td><%= applicant.primary_role %></td>
 				<td><%= applicant.use_case %></td>
+				<td><%= applicant.commercial_use? ? "Yes" : "No" rescue "N/A" %></td>
 				<td><%= applicant.country %></td>
 				<td><%= SiteDefinitions::BY_SHORTNAME[applicant.source_site][:title] %></td>
 				<td>

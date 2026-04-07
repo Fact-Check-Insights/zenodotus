@@ -93,7 +93,7 @@ Library for consistent form layout.
 	font-weight: shared.$font-weight--semibold;
 }
 
-.field__wrapper--input input,
+.field__wrapper--input input:not([type="radio"]):not([type="checkbox"]),
 .field__wrapper--input textarea,
 .field__wrapper--input select {
 	width: 100%;

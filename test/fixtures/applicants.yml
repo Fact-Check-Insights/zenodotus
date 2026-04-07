@@ -9,6 +9,7 @@ new:
   accepted_terms_version: <%= TermsOfService::CURRENT_VERSION %>
   confirmation_token: <%= Devise.friendly_token %>
   confirmation_sent_at: <%= Time.now %>
+  commercial_use: false
 
 confirmed:
   name: Jane Doe
@@ -20,6 +21,7 @@ confirmed:
   confirmation_token: <%= Devise.friendly_token %>
   confirmation_sent_at: <%= Time.now %>
   confirmed_at: <%= Time.now %>
+  commercial_use: false
 
 approved:
   name: Jane Doe
@@ -32,6 +34,7 @@ approved:
   confirmation_sent_at: <%= Time.now %>
   confirmed_at: <%= Time.now %>
   status: approved
+  commercial_use: false
 
 approved_vault:
   name: Jane Doe
@@ -44,6 +47,7 @@ approved_vault:
   confirmation_sent_at: <%= Time.now %>
   confirmed_at: <%= Time.now %>
   status: approved
+  commercial_use: false
 
 rejected:
   name: Jane Doe
@@ -56,6 +60,7 @@ rejected:
   confirmation_sent_at: <%= Time.now %>
   confirmed_at: <%= Time.now %>
   status: rejected
+  commercial_use: false
 
 expired_terms:
   name: Jane Doe
@@ -66,3 +71,4 @@ expired_terms:
   accepted_terms_version: <%= Date.parse("2022-08-01") %>
   confirmation_token: <%= Devise.friendly_token %>
   confirmation_sent_at: <%= Time.now %>
+  commercial_use: false
