@@ -52,7 +52,7 @@
 					</div>
 					<div class="applicant__detail">
 						<dt>Commercial use</dt>
-						<dd><%= applicant.commercial_use? ? "Yes" : "No" %></dd>
+						<dd><%= applicant.commercial_use.nil? ? "N/A" : (applicant.commercial_use? ? "Yes" : "No") %></dd>
 					</div>
 				</dl>
 				<div class="applicant__actions">

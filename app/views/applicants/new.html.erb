@@ -55,7 +55,8 @@
 						<%= f.select(
 							:organization_type,
 							options_for_select(Applicant::ORGANIZATION_TYPES, @applicant.organization_type),
-							{ include_blank: true }) %>
+							{ include_blank: true },
+							{ required: true }) %>
 						<%= errors_for_field(
 							@applicant,
 							:organization_type) %>
@@ -118,11 +119,11 @@
 							<legend><%= t("request_access.commercial_use_question") %></legend>
 							<div style="display:flex; gap:1.5rem;">
 								<div>
-									<%= f.radio_button(:commercial_use, "true") %>
+									<%= f.radio_button(:commercial_use, "true", required: true) %>
 									<%= f.label(:commercial_use_true, t("request_access.yes")) %>
 								</div>
 								<div>
-									<%= f.radio_button(:commercial_use, "false") %>
+									<%= f.radio_button(:commercial_use, "false", required: true) %>
 									<%= f.label(:commercial_use_false, t("request_access.no")) %>
 								</div>
 							</div>
@@ -157,18 +158,21 @@
 		</div>
 		<script>
 			(function() {
-				function setupConditionalField(selectId, wrapperId) {
+				function setupConditionalField(selectId, wrapperId, required) {
 					var select = document.getElementById(selectId);
 					var wrapper = document.getElementById(wrapperId);
 					if (!select || !wrapper) return;
+					var input = wrapper.querySelector("input");
 					function toggle() {
-						wrapper.style.display = select.value === "Other" ? "" : "none";
+						var isOther = select.value === "Other";
+						wrapper.style.display = isOther ? "" : "none";
+						if (input && required) input.required = isOther;
 					}
 					select.addEventListener("change", toggle);
 					toggle();
 				}
-				setupConditionalField("applicant_organization_type", "organization-type-other-wrapper");
-				setupConditionalField("applicant_primary_role", "primary-role-other-wrapper");
+				setupConditionalField("applicant_organization_type", "organization-type-other-wrapper", true);
+				setupConditionalField("applicant_primary_role", "primary-role-other-wrapper", false);
 			})();
 
 			(function() {
