@@ -42,9 +42,9 @@ class Applicant < ApplicationRecord
   validates :confirmation_token, uniqueness: true
   validates :organization_type, inclusion: { in: ORGANIZATION_TYPES, allow_blank: true }
   validates :primary_role, inclusion: { in: PRIMARY_ROLES, allow_blank: true }, on: :create
-  validates :commercial_use, inclusion: { in: [true, false] }
-  validate :organization_type_other_required_when_other
-  validate :primary_role_other_required_when_other
+  validates :commercial_use, inclusion: { in: [true, false] }, on: :create
+  validate :organization_type_other_required_when_other, on: :create
+  validate :primary_role_other_required_when_other, on: :create
 
   after_initialize :map_terms_database_values_to_accessor
   before_create :map_terms_accessor_to_database_values
