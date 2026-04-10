@@ -23,60 +23,31 @@ module Dhashable
 
   def generate_dhashes_for_attached_media
     return unless self.respond_to?(:archivable_item)
-    return if self.videos.empty? && self.images.empty? # if the post is just text, for some reason
+    return if self.videos.empty? && self.images.empty?
+    return if attachment_type == :video # TODO: move video dhashing to a background job — blocks Sidekiq threads for hours on long videos
 
-    media_items = attachment_type == :image ? self.archivable_item.images : self.archivable_item.videos
-    media_items.each do |media_item|
-      media_item = self.attachment_type == :image ? media_item.image : media_item.video
-
-      # TODO: refactor this so it's all the same, since it *mostly* is
+    self.archivable_item.images.each do |media_item|
       begin
-        media_item.open
+        media_item.image.open
       rescue Shrine::FileNotFound
         next
       end
 
-      tempfile_path = media_item.tempfile.path
-
-      dhashes = nil
-
-      case self.attachment_type
-      when :image
-        dhashes = [Eikon.dhash_for_image(tempfile_path)]
-      when :video
-        frame_count = self.methods.include?(:limit_video_frames_hashed) ? self.limit_video_frames_hashed : 10
-        dhashes = Eikon.dhash_for_video(tempfile_path, frame_count).map { |dhash| dhash[:dhash] }
-      end
-
-      dhashes.map do |dhash|
-        ImageHash.create!({
-          dhash: dhash,
-          archive_item: self
-        })
-      end
-
-      media_item.close
+      tempfile_path = media_item.image.tempfile.path
+      dhash = Eikon.dhash_for_image(tempfile_path)
+      ImageHash.create!({ dhash: dhash, archive_item: self })
+      media_item.image.close
     end
   end
 
   def generate_dhashes_for_uploaded_media
     return unless self.respond_to?(:dhashes)
     return if self.video.nil? && self.image.nil?
+    return if self.image.nil? # TODO: move video dhashing to a background job
 
-    media_item = self.image
-    media_item = self.video if media_item.nil?
-
-    media_item.open
-    tempfile_path = media_item.tempfile.path
-
-    # Note on reasoning: `dhash_for_image` return a single object, while `dhash_for_video` returns an array
-    # Since the association is an array, we need to put the single image into an array before saving.
-    if self.video.nil?
-      self.dhashes = [Eikon.dhash_for_image(tempfile_path)]
-    else
-      frame_count = self.methods.include?(:limit_video_frames_hashed) ? self.limit_video_frames_hashed : 10
-      self.dhashes = Eikon.dhash_for_video(tempfile_path, frame_count)
-    end
+    self.image.open
+    tempfile_path = self.image.tempfile.path
+    self.dhashes = [Eikon.dhash_for_image(tempfile_path)]
   end
 
   def generate_single_dhash
