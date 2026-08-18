@@ -24,7 +24,7 @@ class ApplicantsControllerTest < ActionDispatch::IntegrationTest
       use_case: "Journalism?",
       accepted_terms: "1",
       commercial_use: "false",
-    })
+    }, "g-recaptcha-response": RecaptchaMock::VALID_TOKEN)
 
     assert Applicant.find_by(email: "applicant@example.com")
     assert_redirected_to applicant_confirmation_sent_url
@@ -37,7 +37,7 @@ class ApplicantsControllerTest < ActionDispatch::IntegrationTest
       use_case: "Journalism?",
       accepted_terms: "1",
       commercial_use: "false",
-    })
+    }, "g-recaptcha-response": RecaptchaMock::VALID_TOKEN)
 
     assert_redirected_to applicant_confirmation_sent_url
   end
@@ -45,7 +45,7 @@ class ApplicantsControllerTest < ActionDispatch::IntegrationTest
   test "returns a bad request if validations fails during creation" do
     post applicants_url(applicant: {
       name: "Jane Doe",
-    })
+    }, "g-recaptcha-response": RecaptchaMock::VALID_TOKEN)
 
     assert_response :unprocessable_entity
   end
@@ -59,7 +59,7 @@ class ApplicantsControllerTest < ActionDispatch::IntegrationTest
       use_case: "Journalism?",
       accepted_terms: "1",
       commercial_use: "false",
-    })
+    }, "g-recaptcha-response": RecaptchaMock::VALID_TOKEN)
 
     assert_redirected_to applicant_confirmation_sent_url
 
@@ -77,7 +77,7 @@ class ApplicantsControllerTest < ActionDispatch::IntegrationTest
       use_case: "Journalism?",
       accepted_terms: "1",
       commercial_use: "false",
-    })
+    }, "g-recaptcha-response": RecaptchaMock::VALID_TOKEN)
 
     assert_redirected_to applicant_confirmation_sent_url
 
@@ -96,7 +96,7 @@ class ApplicantsControllerTest < ActionDispatch::IntegrationTest
         use_case: "Journalism?",
         accepted_terms: "1",
         commercial_use: "false",
-      })
+      }, "g-recaptcha-response": RecaptchaMock::VALID_TOKEN)
     end
   end
 
@@ -110,7 +110,7 @@ class ApplicantsControllerTest < ActionDispatch::IntegrationTest
       use_case: "Journalism?",
       accepted_terms: "1",
       commercial_use: "false",
-    })
+    }, "g-recaptcha-response": RecaptchaMock::VALID_TOKEN)
 
     assert_nil Applicant.find_by(email: email_upcase)
 
@@ -126,7 +126,7 @@ class ApplicantsControllerTest < ActionDispatch::IntegrationTest
       use_case: "Journalism?",
       accepted_terms: "1",
       commercial_use: "false",
-    })
+    }, "g-recaptcha-response": RecaptchaMock::VALID_TOKEN)
     applicant = Applicant.find_by(email: "applicant-insights@example.com")
 
     assert_equal SiteDefinitions::FACT_CHECK_INSIGHTS[:shortname], applicant[:source_site]
@@ -141,7 +141,7 @@ class ApplicantsControllerTest < ActionDispatch::IntegrationTest
       use_case: "Journalism?",
       accepted_terms: "1",
       commercial_use: "false",
-    })
+    }, "g-recaptcha-response": RecaptchaMock::VALID_TOKEN)
     applicant = Applicant.find_by(email: "applicant-vault@example.com")
 
     assert_equal SiteDefinitions::MEDIA_VAULT[:shortname], applicant[:source_site]
@@ -156,7 +156,7 @@ class ApplicantsControllerTest < ActionDispatch::IntegrationTest
       organization_type: "University",
       primary_role: "Researcher",
       commercial_use: "false",
-    })
+    }, "g-recaptcha-response": RecaptchaMock::VALID_TOKEN)
 
     applicant = Applicant.find_by(email: "newfields@example.com")
     assert applicant
@@ -177,7 +177,7 @@ class ApplicantsControllerTest < ActionDispatch::IntegrationTest
       primary_role: "Other",
       primary_role_other: "Custom role",
       commercial_use: "true",
-    })
+    }, "g-recaptcha-response": RecaptchaMock::VALID_TOKEN)
 
     applicant = Applicant.find_by(email: "otherfields@example.com")
     assert applicant

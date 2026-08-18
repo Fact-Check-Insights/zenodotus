@@ -2,10 +2,11 @@ require "test_helper"
 
 class FacebookUserTest < ActiveSupport::TestCase
   include Minitest::Hooks
+  include TransactionalBeforeAll
 
   def before_all
     @@forki_user = FacebookMediaSource.extract(
-      "https://www.facebook.com/Meta/photos/a.108824087345859/336596487901950", MediaSource::ScrapeType::Twitter, true
+      "https://www.facebook.com/Meta/photos/a.108824087345859/336596487901950", MediaSource::ScrapeType::Twitter, true, initiated_from: Scrape.initiated_froms[:site]
     )["scrape_result"].first["post"]["user"]
   end
 

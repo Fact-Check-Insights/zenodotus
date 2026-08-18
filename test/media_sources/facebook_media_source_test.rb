@@ -3,6 +3,7 @@ require "test_helper"
 
 class FacebookMediaSourceTest < ActiveSupport::TestCase
   include Minitest::Hooks
+  include TransactionalBeforeAll
 
   def around
     AwsS3Downloader.stub(:download_file_in_s3_received_from_hypatia, S3_MOCK_STUB) do
@@ -21,12 +22,12 @@ class FacebookMediaSourceTest < ActiveSupport::TestCase
   end
 
   test "extracting creates a facebook post object" do
-    facebook_post_hash = FacebookMediaSource.extract("https://www.facebook.com/Meta/photos/460964425465155", MediaSource::ScrapeType::Facebook, true)
+    facebook_post_hash = FacebookMediaSource.extract("https://www.facebook.com/Meta/photos/460964425465155", MediaSource::ScrapeType::Facebook, true, initiated_from: Scrape.initiated_froms[:site])
     assert_not facebook_post_hash.empty?
   end
 
   test "extracting without force returns true" do
-    result = FacebookMediaSource.extract("https://www.facebook.com/Meta/photos/460964425465155", MediaSource::ScrapeType::Facebook)
+    result = FacebookMediaSource.extract("https://www.facebook.com/Meta/photos/460964425465155", MediaSource::ScrapeType::Facebook, initiated_from: Scrape.initiated_froms[:site])
     assert result
   end
 

@@ -54,7 +54,7 @@ class Sources::InstagramPost < ApplicationRecord
   def self.create_from_url!(url, user = nil, initiated_from: nil)
     raise "You have to start from somewhere.... (No inititated_from submitted)" if initiated_from.nil?
 
-    zorki_response = InstagramMediaSource.extract(url, MediaSource::ScrapeType::Instagram, true, initiated_from)["scrape_result"]
+    zorki_response = InstagramMediaSource.extract(url, MediaSource::ScrapeType::Instagram, true, initiated_from: initiated_from)["scrape_result"]
     raise "Error sending job to Zorki" unless zorki_response.respond_to?(:first) && zorki_response.first.has_key?("id")
     Sources::InstagramPost.create_from_zorki_hash(zorki_response, user).first
   end

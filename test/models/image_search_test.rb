@@ -3,6 +3,7 @@ require "test_helper"
 class ImageSearchTest < ActiveSupport::TestCase
   include Devise::Test::IntegrationHelpers
   include Minitest::Hooks
+  include TransactionalBeforeAll
 
   def setup
     image_file = File.open("test/mocks/media/instagram_media_12765281-136d-4bfa-b7ad-e89f107b5769.jpg", binmode: true)
@@ -31,10 +32,10 @@ class ImageSearchTest < ActiveSupport::TestCase
 
   test "can run image search on public posts" do
     # First we need to create a few posts. The Shrine fixture way doesn't seem to actually work.
-    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CBcqOkyDDH8/")
-    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CQDeYPhMJLG/")
-    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CBZkDi1nAty/")
-    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CZ3_P6FrtMO/", users(:user))
+    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CBcqOkyDDH8/", initiated_from: Scrape.initiated_froms[:site])
+    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CQDeYPhMJLG/", initiated_from: Scrape.initiated_froms[:site])
+    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CBZkDi1nAty/", initiated_from: Scrape.initiated_froms[:site])
+    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CZ3_P6FrtMO/", users(:user), initiated_from: Scrape.initiated_froms[:site])
     results = @image_search.run
 
     assert_equal 3, results.first.count
@@ -62,10 +63,10 @@ class ImageSearchTest < ActiveSupport::TestCase
 
   test "can run image search for private posts" do
     # First we need to create a few posts. The Shrine fixture way doesn't seem to actually work.
-    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CBcqOkyDDH8/", users(:user))
-    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CQDeYPhMJLG/", users(:user))
-    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CBZkDi1nAty/")
-    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CZ3_P6FrtMO/")
+    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CBcqOkyDDH8/", users(:user), initiated_from: Scrape.initiated_froms[:site])
+    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CQDeYPhMJLG/", users(:user), initiated_from: Scrape.initiated_froms[:site])
+    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CBZkDi1nAty/", initiated_from: Scrape.initiated_froms[:site])
+    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CZ3_P6FrtMO/", initiated_from: Scrape.initiated_froms[:site])
 
     image_file = File.open("test/mocks/media/instagram_media_12765281-136d-4bfa-b7ad-e89f107b5769.jpg", binmode: true)
 
@@ -98,9 +99,9 @@ class ImageSearchTest < ActiveSupport::TestCase
 
   test "can run video search on public posts" do
     # First we need to create a few posts. The Shrine fixture way doesn't seem to actually work.
-    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CHdIkUVBz3C/")
-    Sources::YoutubePost.create_from_url!("https://www.youtube.com/watch?v=Df7UtQTFUMQ")
-    Sources::YoutubePost.create_from_url!("https://youtube.com/shorts/OgWNIBZfwDI", users(:user))
+    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CHdIkUVBz3C/", initiated_from: Scrape.initiated_froms[:site])
+    Sources::YoutubePost.create_from_url!("https://www.youtube.com/watch?v=Df7UtQTFUMQ", initiated_from: Scrape.initiated_froms[:site])
+    Sources::YoutubePost.create_from_url!("https://youtube.com/shorts/OgWNIBZfwDI", users(:user), initiated_from: Scrape.initiated_froms[:site])
 
     results = @video_search.run
 
@@ -128,9 +129,9 @@ class ImageSearchTest < ActiveSupport::TestCase
 
   test "can run video search on private posts" do
     # First we need to create a few posts. The Shrine fixture way doesn't seem to actually work.
-    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CHdIkUVBz3C/", users(:user))
-    Sources::YoutubePost.create_from_url!("https://www.youtube.com/watch?v=Df7UtQTFUMQ", users(:user))
-    Sources::YoutubePost.create_from_url!("https://youtube.com/shorts/OgWNIBZfwDI")
+    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CHdIkUVBz3C/", users(:user), initiated_from: Scrape.initiated_froms[:site])
+    Sources::YoutubePost.create_from_url!("https://www.youtube.com/watch?v=Df7UtQTFUMQ", users(:user), initiated_from: Scrape.initiated_froms[:site])
+    Sources::YoutubePost.create_from_url!("https://youtube.com/shorts/OgWNIBZfwDI", initiated_from: Scrape.initiated_froms[:site])
 
     video_file = File.open("test/mocks/media/youtube_media_23b12624-2ef2-4dcb-97d2-966aa9fcba80.mp4", binmode: true)
     results = ImageSearch.create!(video: video_file, user: users(:user), private: true).run

@@ -3,6 +3,7 @@ require "test_helper"
 class FactCheckInsightsControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
   include Minitest::Hooks
+  include TransactionalBeforeAll
 
   setup do
     host! Figaro.env.FACT_CHECK_INSIGHTS_HOST

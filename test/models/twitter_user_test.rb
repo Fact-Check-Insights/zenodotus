@@ -4,10 +4,11 @@ require "test_helper"
 
 class TwitterUserTest < ActiveSupport::TestCase
   include Minitest::Hooks
+  include TransactionalBeforeAll
 
   def before_all
     @birdsong_user = TwitterMediaSource.extract(
-      "https://twitter.com/AmtrakNECAlerts/status/1397922363551870990", MediaSource::ScrapeType::Twitter, true
+      "https://twitter.com/AmtrakNECAlerts/status/1397922363551870990", MediaSource::ScrapeType::Twitter, true, initiated_from: Scrape.initiated_froms[:site]
     )["scrape_result"].first["post"]["author"]
   end
 

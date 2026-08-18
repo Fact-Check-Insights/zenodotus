@@ -2,6 +2,7 @@ require "test_helper"
 
 class MediaReviewTest < ActiveSupport::TestCase
   include Minitest::Hooks
+  include TransactionalBeforeAll
   include ActiveJob::TestHelper
 
   def before_all

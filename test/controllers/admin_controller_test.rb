@@ -23,7 +23,7 @@ class AdminControllerTest < ActionDispatch::IntegrationTest
   test "should not allow logged-out users" do
     get admin_root_url
 
-    assert_response :redirect
-    assert_equal "You need to sign in or sign up before continuing.", flash[:alert]
+    assert_redirected_to "/"
+    assert_equal "You don’t have permission to access that page.", flash[:error]
   end
 end

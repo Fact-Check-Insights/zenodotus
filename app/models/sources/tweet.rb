@@ -52,7 +52,7 @@ class Sources::Tweet < ApplicationRecord
   def self.create_from_url!(url, user = nil, initiated_from: nil)
     raise "You have to start from somewhere.... (No inititated_from submitted)" if initiated_from.nil?
 
-    tweet_response = TwitterMediaSource.extract(url, MediaSource::ScrapeType::Twitter, true, initiated_from)
+    tweet_response = TwitterMediaSource.extract(url, MediaSource::ScrapeType::Twitter, true, initiated_from: initiated_from)
     tweet_response = tweet_response["scrape_result"] unless tweet_response.nil?
     raise "Invalid Twitter url #{url}" if tweet_response.nil?
     raise "Error sending job to Hypatia" unless tweet_response.respond_to?(:first) && tweet_response.first.has_key?("id")

@@ -5,6 +5,7 @@ require "test_helper"
 class MediaVault::SearchControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
   include Minitest::Hooks
+  include TransactionalBeforeAll
 
   def around
     AwsS3Downloader.stub(:download_file_in_s3_received_from_hypatia, S3_MOCK_STUB) do
@@ -58,7 +59,7 @@ class MediaVault::SearchControllerTest < ActionDispatch::IntegrationTest
       user: users(:media_vault_user),
     })
 
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CHdIkUVBz3C/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CHdIkUVBz3C/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     @private_scrape.fulfill(zorki_image_post)
 
     sign_in users(:media_vault_user)
@@ -84,9 +85,9 @@ class MediaVault::SearchControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "can search media for private posts" do
-    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CHdIkUVBz3C/", users(:media_vault_user))
-    Sources::YoutubePost.create_from_url!("https://www.youtube.com/watch?v=Df7UtQTFUMQ", users(:media_vault_user))
-    Sources::YoutubePost.create_from_url!("https://youtube.com/shorts/OgWNIBZfwDI")
+    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CHdIkUVBz3C/", users(:media_vault_user), initiated_from: Scrape.initiated_froms[:site])
+    Sources::YoutubePost.create_from_url!("https://www.youtube.com/watch?v=Df7UtQTFUMQ", users(:media_vault_user), initiated_from: Scrape.initiated_froms[:site])
+    Sources::YoutubePost.create_from_url!("https://youtube.com/shorts/OgWNIBZfwDI", initiated_from: Scrape.initiated_froms[:site])
 
     assert_difference("ImageSearch.count") do
       sign_in users(:media_vault_user)
@@ -109,9 +110,9 @@ class MediaVault::SearchControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "can search media for public posts" do
-    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CHdIkUVBz3C/", users(:media_vault_user))
-    Sources::YoutubePost.create_from_url!("https://www.youtube.com/watch?v=Df7UtQTFUMQ", users(:media_vault_user))
-    Sources::YoutubePost.create_from_url!("https://youtube.com/shorts/OgWNIBZfwDI")
+    Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CHdIkUVBz3C/", users(:media_vault_user), initiated_from: Scrape.initiated_froms[:site])
+    Sources::YoutubePost.create_from_url!("https://www.youtube.com/watch?v=Df7UtQTFUMQ", users(:media_vault_user), initiated_from: Scrape.initiated_froms[:site])
+    Sources::YoutubePost.create_from_url!("https://youtube.com/shorts/OgWNIBZfwDI", initiated_from: Scrape.initiated_froms[:site])
 
     assert_difference("ImageSearch.count") do
       sign_in users(:media_vault_user)

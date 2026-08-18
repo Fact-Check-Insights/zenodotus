@@ -59,7 +59,7 @@ class Sources::YoutubePost < ApplicationRecord
   def self.create_from_url!(url, user = nil, initiated_from: nil)
     raise "You have to start from somewhere.... (No inititated_from submitted)" if initiated_from.nil?
 
-    youtube_archiver_response = YoutubeMediaSource.extract(url, MediaSource::ScrapeType::Youtube, true, initiated_from)["scrape_result"]
+    youtube_archiver_response = YoutubeMediaSource.extract(url, MediaSource::ScrapeType::Youtube, true, initiated_from: initiated_from)["scrape_result"]
     raise "Error sending job to YoutubeArchiver" unless youtube_archiver_response.respond_to?(:first) && youtube_archiver_response.first.has_key?("id")
     Sources::YoutubePost.create_from_youtube_archiver_hash(youtube_archiver_response, user).first
   end

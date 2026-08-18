@@ -3,6 +3,7 @@ require "test_helper"
 class TextSearchTest < ActiveSupport::TestCase
   include Devise::Test::IntegrationHelpers
   include Minitest::Hooks
+  include TransactionalBeforeAll
 
   def around
     AwsS3Downloader.stub(:download_file_in_s3_received_from_hypatia, S3_MOCK_STUB) do
@@ -25,7 +26,7 @@ class TextSearchTest < ActiveSupport::TestCase
       scrape_type: :instagram,
     })
 
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CHdIkUVBz3C/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CHdIkUVBz3C/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
 
     @public_scrape.fulfill(zorki_image_post)
 
@@ -36,7 +37,7 @@ class TextSearchTest < ActiveSupport::TestCase
       user: users(:user),
     })
 
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CHdIkUVBz3C/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CHdIkUVBz3C/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     @private_scrape.fulfill(zorki_image_post)
   end
 

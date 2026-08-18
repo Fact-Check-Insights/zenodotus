@@ -3,6 +3,7 @@ require "test_helper"
 
 class YoutubeMediaSourceTest < ActiveSupport::TestCase
   include Minitest::Hooks
+  include TransactionalBeforeAll
 
   def around
     AwsS3Downloader.stub(:download_file_in_s3_received_from_hypatia, S3_MOCK_STUB) do
@@ -26,7 +27,7 @@ class YoutubeMediaSourceTest < ActiveSupport::TestCase
   end
 
   test "extracting creates a YoutubePost object" do
-    youtube_post_hash = YoutubeMediaSource.extract("https://www.youtube.com/watch?v=Df7UtQTFUMQ", MediaSource::ScrapeType::Youtube, true)
+    youtube_post_hash = YoutubeMediaSource.extract("https://www.youtube.com/watch?v=Df7UtQTFUMQ", MediaSource::ScrapeType::Youtube, true, initiated_from: Scrape.initiated_froms[:site])
     assert_not youtube_post_hash.empty?
   end
 

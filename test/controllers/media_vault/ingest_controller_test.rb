@@ -4,6 +4,7 @@ require "test_helper"
 
 class MediaVault::IngestControllerTest < ActionDispatch::IntegrationTest
   include Minitest::Hooks
+  include TransactionalBeforeAll
 
   def around
     AwsS3Downloader.stub(:download_file_in_s3_received_from_hypatia, S3_MOCK_STUB) do
@@ -233,7 +234,7 @@ class MediaVault::IngestControllerTest < ActionDispatch::IntegrationTest
     post media_vault_ingest_api_raw_path, params: { review_json: @@media_review_json, external_unique_id: common_uuid, api_key: "123456789" }, as: :JSON
 
     # Attach the MediaReview to a dummy archive item
-    dummy_archive_item = Sources::Tweet.create_from_url!("https://twitter.com/AmtrakNECAlerts/status/1397922363551870990")
+    dummy_archive_item = Sources::Tweet.create_from_url!("https://twitter.com/AmtrakNECAlerts/status/1397922363551870990", initiated_from: Scrape.initiated_froms[:site])
     media_review_object = MediaReview.where(external_unique_id: common_uuid).first
     media_review_object.archive_item = dummy_archive_item
     media_review_object.save

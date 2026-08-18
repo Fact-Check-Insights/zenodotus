@@ -2,6 +2,7 @@ require "test_helper"
 
 class Sources::TikTokPostTest < ActiveSupport::TestCase
   include Minitest::Hooks
+  include TransactionalBeforeAll
   include ActiveJob::TestHelper
 
   def before_all
@@ -35,7 +36,7 @@ class Sources::TikTokPostTest < ActiveSupport::TestCase
   end
 
   test "can create from TikTok url" do
-    assert_not_nil Sources::TikTokPost.create_from_url!("https://www.tiktok.com/@guess/video/7091753416032128299/")
+    assert_not_nil Sources::TikTokPost.create_from_url!("https://www.tiktok.com/@guess/video/7091753416032128299/", initiated_from: Scrape.initiated_froms[:site])
   end
 
   test "can create from TikTok url using ActiveJob" do
@@ -49,7 +50,7 @@ class Sources::TikTokPostTest < ActiveSupport::TestCase
   end
 
   test "can create two TikTok posts from same author" do
-    morris_post2 = TikTokMediaSource.extract("https://www.tiktok.com/@guess/video/7091753416032128299/", MediaSource::ScrapeType::TikTok, true)["scrape_result"]
+    morris_post2 = TikTokMediaSource.extract("https://www.tiktok.com/@guess/video/7091753416032128299/", MediaSource::ScrapeType::TikTok, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     archive_item = Sources::TikTokPost.create_from_morris_hash(@@morris_video_post).first.tik_tok_post
     archive_item2 = Sources::TikTokPost.create_from_morris_hash(morris_post2).first.tik_tok_post
     assert_equal archive_item.author, archive_item2.author
@@ -61,7 +62,7 @@ class Sources::TikTokPostTest < ActiveSupport::TestCase
   end
 
   test "can kick off archive from TikTok post" do
-    result = TikTokMediaSource.extract("https://www.tiktok.com/@guess/video/7091753416032128299/", MediaSource::ScrapeType::TikTok, true)
+    result = TikTokMediaSource.extract("https://www.tiktok.com/@guess/video/7091753416032128299/", MediaSource::ScrapeType::TikTok, true, initiated_from: Scrape.initiated_froms[:site])
     assert result
   end
 

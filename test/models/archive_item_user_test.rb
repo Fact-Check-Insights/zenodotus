@@ -2,11 +2,12 @@ require "test_helper"
 
 class ArchiveItemUserTest < ActiveSupport::TestCase
   include Minitest::Hooks
+  include TransactionalBeforeAll
   include ActiveJob::TestHelper
 
   def setup
     unless defined? @@archive_item
-      @@zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+      @@zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     end
   end
 

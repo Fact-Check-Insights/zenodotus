@@ -2,6 +2,7 @@ require "test_helper"
 
 class ClaimReviewTest < ActiveSupport::TestCase
   include Minitest::Hooks
+  include TransactionalBeforeAll
   include ActiveJob::TestHelper
 
   test "claim review properly can turn appearances into an array" do

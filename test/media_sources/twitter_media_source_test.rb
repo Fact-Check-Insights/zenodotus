@@ -4,6 +4,7 @@ require "test_helper"
 
 class TwitterMediaSourceTest < ActiveSupport::TestCase
   include Minitest::Hooks
+  include TransactionalBeforeAll
 
   def around
     AwsS3Downloader.stub(:download_file_in_s3_received_from_hypatia, S3_MOCK_STUB) do
@@ -32,13 +33,13 @@ class TwitterMediaSourceTest < ActiveSupport::TestCase
   end
 
   def test_extracting_creates_twitter_post_object
-    twitter_post_hash = TwitterMediaSource.extract("https://twitter.com/jack/status/20", MediaSource::ScrapeType::Twitter, true)
+    twitter_post_hash = TwitterMediaSource.extract("https://twitter.com/jack/status/20", MediaSource::ScrapeType::Twitter, true, initiated_from: Scrape.initiated_froms[:site])
     assert_not twitter_post_hash.empty?
   end
 
   def test_unfound_tweet_raises
     assert_raises(MediaSource::ExternalServerError) do
-      TwitterMediaSource.extract("https://twitter.com/jack/status/1", MediaSource::ScrapeType::Twitter, true)
+      TwitterMediaSource.extract("https://twitter.com/jack/status/1", MediaSource::ScrapeType::Twitter, true, initiated_from: Scrape.initiated_froms[:site])
     end
   end
 

@@ -2,6 +2,7 @@ require "test_helper"
 
 class TikTokMediaSourceTest < ActiveSupport::TestCase
   include Minitest::Hooks
+  include TransactionalBeforeAll
 
   def around
     AwsS3Downloader.stub(:download_file_in_s3_received_from_hypatia, S3_MOCK_STUB) do
@@ -37,12 +38,12 @@ class TikTokMediaSourceTest < ActiveSupport::TestCase
   end
 
   test "extracting creates an tik_tok post object" do
-    tik_tok_post_hash = TikTokMediaSource.extract("https://www.tiktok.com/@guess/video/7091753416032128299/", MediaSource::ScrapeType::TikTok, true)
+    tik_tok_post_hash = TikTokMediaSource.extract("https://www.tiktok.com/@guess/video/7091753416032128299/", MediaSource::ScrapeType::TikTok, true, initiated_from: Scrape.initiated_froms[:site])
     assert_not tik_tok_post_hash.empty?
   end
 
   test "extracting without force returns true" do
-    tik_tok_post_response = TikTokMediaSource.extract("https://www.tiktok.com/@guess/video/7091753416032128299/", MediaSource::ScrapeType::TikTok, false)
+    tik_tok_post_response = TikTokMediaSource.extract("https://www.tiktok.com/@guess/video/7091753416032128299/", MediaSource::ScrapeType::TikTok, false, initiated_from: Scrape.initiated_froms[:site])
     assert tik_tok_post_response
   end
 

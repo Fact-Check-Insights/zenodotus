@@ -47,7 +47,7 @@ class Sources::TikTokPost < ApplicationRecord
   def self.create_from_url!(url, user = nil, initiated_from: nil)
     raise "You have to start from somewhere.... (No inititated_from submitted)" if initiated_from.nil?
 
-    morris_response = TikTokMediaSource.extract(url, MediaSource::ScrapeType::TikTok, true, initiated_from)["scrape_result"]
+    morris_response = TikTokMediaSource.extract(url, MediaSource::ScrapeType::TikTok, true, initiated_from: initiated_from)["scrape_result"]
     raise "Error sending job to Morris" unless morris_response.respond_to?(:first) && morris_response.first.has_key?("id")
     Sources::TikTokPost.create_from_morris_hash(morris_response, user).first
   end
