@@ -11,6 +11,14 @@ env:
   AUTH_BASE_HOST: "factcheckinsights.org"
   MAIL_DOMAIN: "factcheckinsights.org"
   MAILGUN_API_KEY: "1234567890"
+  PUBLIC_LINK_HOST: "public.factcheckinsights.org"
+  RECAPTCHA_SITE_KEY: "1234567890"
+  RECAPTCHA_PROJECT_ID: "1234567890"
+  OLLAMA_URL: "https://www.example.com"
+  OLLAMA_PASSWORD: "1234567890"
+  FACTCHECK_TOOLS_API_KEY: "1234567890"
+  CHROME_EXTENSION_ID: "1234567890"
+  VIPS_WARNING: "0"
   USE_S3_DEV_TEST: "false"
 
 jobs:
@@ -23,7 +31,7 @@ jobs:
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 3.1.4
+        ruby-version: 3.3.7
         bundler-cache: true
     - name: Lint with Rubocop
       run: bundle exec rubocop
@@ -71,7 +79,7 @@ jobs:
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 3.1.4
+        ruby-version: 3.3.7
         bundler-cache: true
         redis-version: 7
     - name: Install dependencies
