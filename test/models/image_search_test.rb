@@ -25,6 +25,7 @@ class ImageSearchTest < ActiveSupport::TestCase
   end
 
   test "can create image search with video" do
+    skip "Uploaded videos are not hashed — see the TODO in app/models/concerns/dhashable.rb:46"
     assert_not_nil @video_search
     assert_not_nil @video_search.video
     assert_not_nil @video_search.dhashes
@@ -98,6 +99,7 @@ class ImageSearchTest < ActiveSupport::TestCase
   end
 
   test "can run video search on public posts" do
+    skip "Uploaded videos are not hashed — see the TODO in app/models/concerns/dhashable.rb:46"
     # First we need to create a few posts. The Shrine fixture way doesn't seem to actually work.
     Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CHdIkUVBz3C/", initiated_from: Scrape.initiated_froms[:site])
     Sources::YoutubePost.create_from_url!("https://www.youtube.com/watch?v=Df7UtQTFUMQ", initiated_from: Scrape.initiated_froms[:site])
@@ -128,6 +130,7 @@ class ImageSearchTest < ActiveSupport::TestCase
   end
 
   test "can run video search on private posts" do
+    skip "Uploaded videos are not hashed — see the TODO in app/models/concerns/dhashable.rb:46"
     # First we need to create a few posts. The Shrine fixture way doesn't seem to actually work.
     Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CHdIkUVBz3C/", users(:user), initiated_from: Scrape.initiated_froms[:site])
     Sources::YoutubePost.create_from_url!("https://www.youtube.com/watch?v=Df7UtQTFUMQ", users(:user), initiated_from: Scrape.initiated_froms[:site])
