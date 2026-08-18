@@ -1,6 +1,10 @@
 name: Ruby
 
-on: [push,pull_request]
+on: [push, pull_request]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   KEY_ENCRYPTION_SALT: "1234567890"
@@ -25,9 +29,9 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Install CuRL
-      run: sudo apt-get install libcurl4-openssl-dev
+    - uses: actions/checkout@v4
+    - name: Install system packages
+      run: sudo apt-get install -y --no-install-recommends libcurl4-openssl-dev
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
@@ -69,21 +73,15 @@ jobs:
           - 6379:6379
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: FedericoCarboni/setup-ffmpeg@v2
-    - uses: actions/checkout@v2
-    - name: Install CuRL
-      run: sudo apt-get install libcurl4-openssl-dev
-    - name: Install Vips
-      run: sudo apt install libvips libvips-tools libvips-dev
+    - name: Install system packages
+      run: sudo apt-get install -y --no-install-recommends libcurl4-openssl-dev libvips
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: 3.3.7
         bundler-cache: true
-        redis-version: 7
-    - name: Install dependencies
-      run: bundle install --jobs 4 --retry 3 --deployment
     - name: Setup database
       run: bundle exec rails db:setup
     - name: Precompile assets
