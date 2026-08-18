@@ -85,5 +85,16 @@
       </div>
     </div>
     <% end %>
+    <% if @applicant.rejected? %>
+    <div class="applicant__actions">
+      <%= link_to "Delete application",
+                  admin_applicant_path(@applicant),
+                  class: "btn btn--danger",
+                  data: {
+                    turbo_method: :delete,
+                    turbo_confirm: "Permanently delete this rejected application and all of its data? This cannot be undone."
+                  } %>
+    </div>
+    <% end %>
   </div>
 </div>

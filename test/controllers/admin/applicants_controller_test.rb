@@ -65,6 +65,23 @@ class Admin::ApplicantsControllerTest < ActionDispatch::IntegrationTest
     assert_predicate applicant, :approved?
   end
 
+  test "shows a delete button on the details page for a rejected applicant" do
+    accept_privacy_policy
+    get admin_applicant_path(applicants(:rejected))
+
+    assert_select "a[href=?]", admin_applicant_path(applicants(:rejected)), text: "Delete application"
+  end
+
+  test "does not show a delete button on the details page for an unrejected applicant" do
+    accept_privacy_policy
+
+    [:new, :confirmed, :approved].each do |fixture|
+      get admin_applicant_path(applicants(fixture))
+
+      assert_select "a", text: "Delete application", count: 0
+    end
+  end
+
   test "can identify the reviewer" do
     admin = users(:admin)
     applicant = applicants(:confirmed)
@@ -88,5 +105,12 @@ class Admin::ApplicantsControllerTest < ActionDispatch::IntegrationTest
     user.reload
     assert_not user.has_role?(:fact_check_insights_user)
     assert user.has_role?(:media_vault_user)
+  end
+
+private
+
+  # Admin pages redirect to the privacy policy until the signed-in user has accepted it.
+  def accept_privacy_policy
+    users(:admin).update!(privacy_policy_accepted_at: Time.current)
   end
 end
