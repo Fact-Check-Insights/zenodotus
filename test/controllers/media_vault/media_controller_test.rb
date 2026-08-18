@@ -4,6 +4,7 @@ class MediaVault::MediaControllerTest < ActionDispatch::IntegrationTest
   include ActiveJob::TestHelper
   include Devise::Test::IntegrationHelpers
   include Minitest::Hooks
+  include TransactionalBeforeAll
 
   def around
     AwsS3Downloader.stub(:download_file_in_s3_received_from_hypatia, S3_MOCK_STUB) do
@@ -67,7 +68,7 @@ class MediaVault::MediaControllerTest < ActionDispatch::IntegrationTest
   # end
 
   test "can view individual piece of media" do
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     Sources::InstagramPost.create_from_zorki_hash(zorki_image_post).first
 
     sign_in users(:media_vault_user)
@@ -78,7 +79,7 @@ class MediaVault::MediaControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "can not view media that is private and owned by the user" do
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     Sources::InstagramPost.create_from_zorki_hash(zorki_image_post).first
 
     archive_item = ArchiveItem.first
@@ -93,7 +94,7 @@ class MediaVault::MediaControllerTest < ActionDispatch::IntegrationTest
 
 
   test "can not view media that is private but owned by someone else" do
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     Sources::InstagramPost.create_from_zorki_hash(zorki_image_post).first
 
     archive_item = ArchiveItem.first
@@ -107,7 +108,7 @@ class MediaVault::MediaControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "can delete media I own" do
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     Sources::InstagramPost.create_from_zorki_hash(zorki_image_post).first
 
     archive_item = ArchiveItem.first
@@ -122,7 +123,7 @@ class MediaVault::MediaControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "cannot delete media I do not own" do
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     Sources::InstagramPost.create_from_zorki_hash(zorki_image_post).first
 
     archive_item = ArchiveItem.first
@@ -137,7 +138,7 @@ class MediaVault::MediaControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "cannot delete non-private media" do
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     Sources::InstagramPost.create_from_zorki_hash(zorki_image_post).first
 
     archive_item = ArchiveItem.first

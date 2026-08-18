@@ -2,6 +2,7 @@ require "test_helper"
 
 class ScrapeTest < ActiveSupport::TestCase
   include Minitest::Hooks
+  include TransactionalBeforeAll
   include ActiveJob::TestHelper
   include ActionMailer::TestHelper
 
@@ -108,7 +109,7 @@ class ScrapeTest < ActiveSupport::TestCase
       archive_item: archive_items[0]
     )
 
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     scrape.fulfill(zorki_image_post)
 
     assert scrape.fulfilled
@@ -150,7 +151,7 @@ class ScrapeTest < ActiveSupport::TestCase
       archive_item: archive_items[0]
     )
 
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/not_found/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/not_found/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
 
     scrape.fulfill(zorki_image_post)
     media_review.reload
@@ -233,7 +234,7 @@ class ScrapeTest < ActiveSupport::TestCase
       archive_item: archive_items[0]
     )
 
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     scrape.fulfill(zorki_image_post)
 
     assert_not_nil scrape.archive_item.posted_at
@@ -277,7 +278,7 @@ class ScrapeTest < ActiveSupport::TestCase
       archive_item: archive_items[0]
     )
 
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     scrape.fulfill(zorki_image_post)
 
     assert_not_nil scrape.archive_item.posted_at
@@ -321,7 +322,7 @@ class ScrapeTest < ActiveSupport::TestCase
       archive_item: archive_items[0]
     )
 
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
 
     assert_emails 1 do
       perform_enqueued_jobs do
@@ -395,7 +396,7 @@ class ScrapeTest < ActiveSupport::TestCase
       archive_item: archive_items[0]
     )
 
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
 
     assert_emails 0 do
       perform_enqueued_jobs do

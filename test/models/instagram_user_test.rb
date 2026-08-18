@@ -2,9 +2,10 @@ require "test_helper"
 
 class InstagramUserTest < ActiveSupport::TestCase
   include Minitest::Hooks
+  include TransactionalBeforeAll
 
   def before_all
-    @@zorki_user = InstagramMediaSource.extract("https://www.instagram.com/p/CQDeYPhMJLG/", MediaSource::ScrapeType::Instagram, true)["scrape_result"].first["post"]["user"]
+    @@zorki_user = InstagramMediaSource.extract("https://www.instagram.com/p/CQDeYPhMJLG/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"].first["post"]["user"]
   end
 
   def around

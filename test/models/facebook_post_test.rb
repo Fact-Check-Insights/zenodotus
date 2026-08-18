@@ -3,11 +3,12 @@ require "test_helper"
 class FacebookPostTest < ActiveSupport::TestCase
   include ActiveJob::TestHelper
   include Minitest::Hooks
+  include TransactionalBeforeAll
 
   def before_all
-    @@forki_image_post = FacebookMediaSource.extract("https://www.facebook.com/Meta/photos/a.108824087345859/336596487901950", MediaSource::ScrapeType::Facebook, true)["scrape_result"]
-    @@forki_image_post_2 = FacebookMediaSource.extract("https://www.facebook.com/Meta/photos/460964425465155", MediaSource::ScrapeType::Facebook, true)["scrape_result"]
-    @@forki_video_post = FacebookMediaSource.extract("https://www.facebook.com/Meta/videos/264436895517475", MediaSource::ScrapeType::Facebook, true)["scrape_result"]
+    @@forki_image_post = FacebookMediaSource.extract("https://www.facebook.com/Meta/photos/a.108824087345859/336596487901950", MediaSource::ScrapeType::Facebook, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
+    @@forki_image_post_2 = FacebookMediaSource.extract("https://www.facebook.com/Meta/photos/460964425465155", MediaSource::ScrapeType::Facebook, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
+    @@forki_video_post = FacebookMediaSource.extract("https://www.facebook.com/Meta/videos/264436895517475", MediaSource::ScrapeType::Facebook, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
   end
 
   def around
@@ -47,7 +48,7 @@ class FacebookPostTest < ActiveSupport::TestCase
   end
 
   test "can create Facebook post from url using activejob" do
-    Sources::FacebookPost.create_from_url!("https://www.facebook.com/Meta/photos/460964425465155")
+    Sources::FacebookPost.create_from_url!("https://www.facebook.com/Meta/photos/460964425465155", initiated_from: Scrape.initiated_froms[:site])
     perform_enqueued_jobs
 
     facebook_post = Sources::FacebookPost.where(url: "https://www.facebook.com/Meta/photos/460964425465155").first

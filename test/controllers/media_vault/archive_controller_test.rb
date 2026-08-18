@@ -5,6 +5,7 @@ require "test_helper"
 class MediaVault::ArchiveControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
   include Minitest::Hooks
+  include TransactionalBeforeAll
 
   setup do
     host! Figaro.env.MEDIA_VAULT_HOST
@@ -135,7 +136,7 @@ class MediaVault::ArchiveControllerTest < ActionDispatch::IntegrationTest
 
   test "vault only shows all items it should" do
     # This is public
-    post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     Sources::InstagramPost.create_from_zorki_hash(post)
 
     sign_in users(:user)
@@ -146,7 +147,7 @@ class MediaVault::ArchiveControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "personal vault only shows the user's own items" do
-    post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     Sources::InstagramPost.create_from_zorki_hash(post)
 
     sign_in users(:user)
@@ -163,7 +164,7 @@ class MediaVault::ArchiveControllerTest < ActionDispatch::IntegrationTest
 
     assert user.archive_items.empty?
 
-    post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     Sources::InstagramPost.create_from_zorki_hash(post, users(:user))
 
     assert user.archive_items.count == 1
@@ -172,10 +173,10 @@ class MediaVault::ArchiveControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     # FIXM#: assert_select "div.archive-item", count: 1
 
-    post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     Sources::InstagramPost.create_from_zorki_hash(post, users(:media_vault_user))
 
-    post = InstagramMediaSource.extract("https://www.instagram.com/p/CHdIkUVBz3C/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    post = InstagramMediaSource.extract("https://www.instagram.com/p/CHdIkUVBz3C/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     Sources::InstagramPost.create_from_zorki_hash(post, users(:media_vault_user))
 
     # FIXM#: assert_select "div.archive-item", count: 1

@@ -11,7 +11,7 @@ class ScrapeMailerTest < ActionMailer::TestCase
     end
 
     # Test the body of the sent email contains what we expect it to
-    assert_equal ["no-reply@mail.factcheckinsights.com"], email.from
+    assert_equal ["no-reply@#{Figaro.env.MAIL_DOMAIN}"], email.from
     assert_equal ["friend@example.com"], email.to
   end
 end

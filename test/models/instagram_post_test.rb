@@ -2,11 +2,12 @@ require "test_helper"
 
 class InstagramPostTest < ActiveSupport::TestCase
   include Minitest::Hooks
+  include TransactionalBeforeAll
   include ActiveJob::TestHelper
 
   def before_all
-    @@zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
-    @@zorki_video_post = InstagramMediaSource.extract("https://www.instagram.com/p/CHdIkUVBz3C/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    @@zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
+    @@zorki_video_post = InstagramMediaSource.extract("https://www.instagram.com/p/CHdIkUVBz3C/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
   end
 
   def around
@@ -36,7 +37,7 @@ class InstagramPostTest < ActiveSupport::TestCase
   end
 
   test "can create from Instagram url" do
-    assert_not_nil Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CBcqOkyDDH8/")
+    assert_not_nil Sources::InstagramPost.create_from_url!("https://www.instagram.com/p/CBcqOkyDDH8/", initiated_from: Scrape.initiated_froms[:site])
   end
 
   test "can create from Instagram url using ActiveJob" do
@@ -50,7 +51,7 @@ class InstagramPostTest < ActiveSupport::TestCase
   end
 
   test "can create two Instagram posts from same author" do
-    zorki_post2 = InstagramMediaSource.extract("https://www.instagram.com/p/CQDeYPhMJLG/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_post2 = InstagramMediaSource.extract("https://www.instagram.com/p/CQDeYPhMJLG/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     archive_item = Sources::InstagramPost.create_from_zorki_hash(@@zorki_image_post).first.instagram_post
     archive_item2 = Sources::InstagramPost.create_from_zorki_hash(zorki_post2).first.instagram_post
     assert_equal archive_item.author, archive_item2.author
@@ -62,7 +63,7 @@ class InstagramPostTest < ActiveSupport::TestCase
   end
 
   test "can kick off archive from Instagram post" do
-    result = InstagramMediaSource.extract("https://www.instagram.com/p/CHdIkUVBz3C/", MediaSource::ScrapeType::Instagram, true)
+    result = InstagramMediaSource.extract("https://www.instagram.com/p/CHdIkUVBz3C/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])
     assert result
   end
 

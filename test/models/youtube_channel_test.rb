@@ -4,10 +4,11 @@ require "test_helper"
 
 class YoutubeChannelTest < ActiveSupport::TestCase
   include Minitest::Hooks
+  include TransactionalBeforeAll
 
   def before_all
     @@youtube_archiver_channel = YoutubeMediaSource.extract(
-      "https://www.youtube.com/watch?v=kFFvomxcLWo", MediaSource::ScrapeType::Youtube, true
+      "https://www.youtube.com/watch?v=kFFvomxcLWo", MediaSource::ScrapeType::Youtube, true, initiated_from: Scrape.initiated_froms[:site]
     )["scrape_result"].first["post"]["channel"]
   end
 

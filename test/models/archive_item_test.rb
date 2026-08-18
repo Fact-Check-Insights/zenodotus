@@ -4,6 +4,7 @@ require "test_helper"
 
 class ArchiveItemTest < ActionDispatch::IntegrationTest
   include Minitest::Hooks
+  include TransactionalBeforeAll
   include Devise::Test::IntegrationHelpers
 
   def around
@@ -14,20 +15,20 @@ class ArchiveItemTest < ActionDispatch::IntegrationTest
 
   test "destroying a user resets the submitter_id of ArchiveItems it created" do
     sign_in users(:user)
-    Sources::Tweet.create_from_url! "https://twitter.com/jack/status/20", users(:user)
+    Sources::Tweet.create_from_url! "https://twitter.com/jack/status/20", users(:user), initiated_from: Scrape.initiated_froms[:site]
     assert_not_nil ArchiveItem.first.submitter
     User.destroy(users(:user).id)
     assert_nil ArchiveItem.first.submitter
   end
 
   test "scraping a post creates a screenshot" do
-    forki_post = FacebookMediaSource.extract("https://www.facebook.com/Meta/photos/460964425465155", MediaSource::ScrapeType::Facebook, true)["scrape_result"]
+    forki_post = FacebookMediaSource.extract("https://www.facebook.com/Meta/photos/460964425465155", MediaSource::ScrapeType::Facebook, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     archive_item = Sources::FacebookPost.create_from_forki_hash(forki_post).first
     assert_not_nil archive_item.screenshot
   end
 
   test "archive items by default only retrieve publicly available items" do
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     Sources::InstagramPost.create_from_zorki_hash(zorki_image_post).first
     assert_equal 1, ArchiveItem.count
 
@@ -37,7 +38,7 @@ class ArchiveItemTest < ActionDispatch::IntegrationTest
   end
 
   test "archive items that are private can still be retrieve by user" do
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     archive_item = Sources::InstagramPost.create_from_zorki_hash(zorki_image_post).first
     user = users(:user)
     user.archive_items << archive_item
@@ -47,7 +48,7 @@ class ArchiveItemTest < ActionDispatch::IntegrationTest
   end
 
   test "archive items that are private can be upgraded to public" do
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     archive_item = Sources::InstagramPost.create_from_zorki_hash(zorki_image_post).first
     archive_item.update private: true
 
@@ -61,7 +62,7 @@ class ArchiveItemTest < ActionDispatch::IntegrationTest
   end
 
   test "multiple users can be associated with an archive item" do
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     archive_item = Sources::InstagramPost.create_from_zorki_hash(zorki_image_post).first
     user = users(:user)
     user.archive_items << archive_item
@@ -71,7 +72,7 @@ class ArchiveItemTest < ActionDispatch::IntegrationTest
   end
 
   test "an archive item with multiple users isn't deleted if one of the users is" do
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     archive_item = Sources::InstagramPost.create_from_zorki_hash(zorki_image_post).first
     user = users(:user)
     user.archive_items << archive_item
@@ -183,27 +184,27 @@ class ArchiveItemTest < ActionDispatch::IntegrationTest
   end
 
   test "a url is added to the archive item" do
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CBcqOkyDDH8/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     archive_item = Sources::InstagramPost.create_from_zorki_hash(zorki_image_post).first
     assert_not_nil archive_item.url
     assert_equal "https://www.instagram.com/p/CBcqOkyDDH8/", archive_item.url
   end
 
   test "can categorize an archive item" do
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CHdIkUVBz3C/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CHdIkUVBz3C/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     archive_item = Sources::InstagramPost.create_from_zorki_hash(zorki_image_post).first
     archive_item.categorize!
     assert_not_nil archive_item.categories.first.name
   end
 
   test "automatically categorized on create" do
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CHdIkUVBz3C/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CHdIkUVBz3C/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     archive_item = Sources::InstagramPost.create_from_zorki_hash(zorki_image_post).first
     assert_not_nil archive_item.categories.first.name
   end
 
   test "can remove categories" do
-    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CHdIkUVBz3C/", MediaSource::ScrapeType::Instagram, true)["scrape_result"]
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CHdIkUVBz3C/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
     archive_item = Sources::InstagramPost.create_from_zorki_hash(zorki_image_post).first
     assert archive_item.categories.count.positive?
 
