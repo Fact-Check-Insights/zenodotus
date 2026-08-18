@@ -59,6 +59,15 @@ end
 # `before_all` runs outside the per-test transaction, so anything it creates is
 # committed and outlives the class. Wrapping the whole class in a transaction keeps
 # the test database clean between classes and between runs.
+# Rails inserts the fixtures during the first test to run and commits them — unless a
+# transaction is already open on that connection, in which case they are rolled back
+# with it. TransactionalBeforeAll opens exactly such a transaction, so load the
+# fixtures here, before any class-level transaction can swallow them.
+ActiveSupport::TestCase.new("fixture preload").tap do |warmup|
+  warmup.send(:setup_fixtures)
+  warmup.send(:teardown_fixtures)
+end
+
 module TransactionalBeforeAll
   def around_all
     ActiveRecord::Base.transaction do
