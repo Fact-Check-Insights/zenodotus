@@ -20,7 +20,7 @@
                 <video
                     width="100%"
                     height="auto"
-                    poster="<%= media.video_derivatives[:preview].url %>"
+                    poster="<%= media.video_derivatives[:preview]&.url %>"
                     preload="none"
                     controls
                 >
