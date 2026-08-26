@@ -85,7 +85,7 @@ private
       handle: birdsong_user["username"],
       display_name: birdsong_user["name"],
       sign_up_date: birdsong_user["created_at"],
-      description: birdsong_user["description"],
+      description: birdsong_user["description"].to_s,
       url: birdsong_user["url"],
       profile_image_url: birdsong_user["profile_image_url"],
       location: birdsong_user["location"],

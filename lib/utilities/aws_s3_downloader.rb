@@ -18,8 +18,10 @@ class AwsS3Downloader
   end
 
   # Download single url that was sent from Hypatia
-  sig { params(url: String).returns(String) }
+  sig { params(url: T.nilable(String)).returns(T.nilable(String)) }
   def self.download_file_in_s3_received_from_hypatia(url)
+    return nil if url.blank?
+
     bucket_name = Figaro.env.AWS_S3_BUCKET_NAME
     object_key = "#{Figaro.env.AWS_S3_PATH_HYPATIA}#{File.basename(url)}"
 

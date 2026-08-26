@@ -438,6 +438,10 @@ class AccountsController < ApplicationController
 
   sig { void }
   def remote_token
+    # `current_user` can be nil if this route is hit before authentication is
+    # fully set up; surface a proper error instead of NoMethodError.
+    raise InvalidTokenError if current_user.nil?
+
     @remote_token = current_user.rotate_remote_key.remote_key
   end
 
