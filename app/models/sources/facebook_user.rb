@@ -67,16 +67,16 @@ class Sources::FacebookUser < ApplicationRecord
     # @returns Hash a data structure suitable to pass to `create` or `update`
     sig { params(forki_user: Hash).returns(Hash) }
     def self.facebook_user_hash_from_forki_user(forki_user)
-      # If the requisite object key is present, download the user's profile image from s3
-      if forki_user.has_key?("aws_profile_image_key")
+      profile_image_path = nil
+      # If a valid S3 object key is present, download the user's profile image
+      # from s3. Otherwise fall back to inline (Base64) image data when present.
+      if forki_user["aws_profile_image_key"].present?
         profile_image_path = AwsS3Downloader.download_file_in_s3_received_from_hypatia(forki_user["aws_profile_image_key"])
-      else
-        # We create a temp file and write the image data to it, which yea, is dumb,
-        # and there may be a better way to do it, but this works to fix the encoding issues
-        # (basically, when we call `create` later, Rails tries to convert the string into UTF-8
-        # which obviously breaks everything)
+      elsif forki_user["profile_image"].present?
+        # We create a temp file and write the image data to it. This avoids the
+        # encoding issues when Rails tries to convert the string into UTF-8.
         tempfile = Tempfile.new(binmode: true)
-        tempfile.write(Base64.decode64(forki_post["profile_image"]))
+        tempfile.write(Base64.decode64(forki_user["profile_image"]))
         profile_image_path = tempfile.path
         tempfile.close!
       end
@@ -90,8 +90,8 @@ class Sources::FacebookUser < ApplicationRecord
         verified:            forki_user["verified"],
         url:                 forki_user["profile_link"],
         profile_image_url:   forki_user["profile_image_url"],
-        profile_image:       File.open(profile_image_path, binmode: true)
       }
+      hash_to_return[:profile_image] = File.open(profile_image_path, binmode: true) if profile_image_path.present?
       hash_to_return
     end
 end

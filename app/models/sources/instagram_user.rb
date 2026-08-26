@@ -68,10 +68,11 @@ private
   # @returns Hash a data structure suitable to pass to `create` or `update`
   sig { params(zorki_user: Hash).returns(Hash) }
   def self.instagram_user_hash_from_zorki_user(zorki_user)
-    # If the requisite object key is present, download the user's profile image from s3
-    if zorki_user.has_key?("aws_profile_image_key")
+    profile_image_path = nil
+    # If a valid S3 object key is present, download the user's profile image from s3
+    if zorki_user["aws_profile_image_key"].present?
       profile_image_path = AwsS3Downloader.download_file_in_s3_received_from_hypatia(zorki_user["aws_profile_image_key"])
-    else
+    elsif zorki_user["profile_image"].present?
       # We create a temp file and write the image data to it, which yea, is dumb,
       # and there may be a better way to do it, but this works to fix the encoding issues
       # (basically, when we call `create` later, Rails tries to convert the string into UTF-8
@@ -92,8 +93,8 @@ private
       profile:             zorki_user["profile"],
       url:                 zorki_user["profile_link"],
       profile_image_url:   zorki_user["profile_image_url"],
-      profile_image:       File.open(profile_image_path, binmode: true)
     }
+    hash_to_return[:profile_image] = File.open(profile_image_path, binmode: true) if profile_image_path.present?
 
     hash_to_return
   end

@@ -67,10 +67,11 @@ private
   # @returns Hash a data structure suitable to pass to `create` or `update`
   sig { params(youtube_archiver_channel: Hash).returns(Hash) }
   def self.youtube_channel_hash_from_youtube_archiver_channel(youtube_archiver_channel)
-    # If the requisite object key is present, download the user's profile image from s3
-    if youtube_archiver_channel.has_key?("aws_profile_image_key")
+    profile_image_path = nil
+    # If a valid S3 object key is present, download the user's profile image from s3
+    if youtube_archiver_channel["aws_profile_image_key"].present?
       profile_image_path = AwsS3Downloader.download_file_in_s3_received_from_hypatia(youtube_archiver_channel["aws_profile_image_key"])
-    else
+    elsif youtube_archiver_channel["channel_image_file"].present?
       # We create a temp file and write the image data to it, which yea, is dumb,
       # and there may be a better way to do it, but this works to fix the encoding issues
       # (basically, when we call `create` later, Rails tries to convert the string into UTF-8
@@ -81,7 +82,7 @@ private
       tempfile.close!
     end
 
-    {
+    hash_to_return = {
       youtube_id: youtube_archiver_channel["id"],
       title: youtube_archiver_channel["title"],
       sign_up_date: youtube_archiver_channel["created_at"],
@@ -90,7 +91,8 @@ private
       num_subscribers: youtube_archiver_channel["subscriber_count"],
       num_videos: youtube_archiver_channel["video_count"],
       made_for_kids: youtube_archiver_channel["made_for_kids"],
-      channel_image: File.open(profile_image_path, binmode: true)
     }
+    hash_to_return[:channel_image] = File.open(profile_image_path, binmode: true) if profile_image_path.present?
+    hash_to_return
   end
 end
