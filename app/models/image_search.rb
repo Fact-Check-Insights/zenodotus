@@ -118,7 +118,7 @@ class ImageSearch < ApplicationRecord
       # Probably can get this into the sql above
       videos.uniq! { |video_hash| video_hash[:video] }
       archive_final_items = videos
-      google_items = search_google_by_media(self.video_derivatives[:preview].url)
+      google_items = self.video_derivatives[:preview] ? search_google_by_media(self.video_derivatives[:preview].url) : []
     end
 
     [archive_final_items, google_items]
