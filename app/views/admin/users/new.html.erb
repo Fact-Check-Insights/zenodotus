@@ -1,0 +1,43 @@
+<% @title_tag = "New User" %>
+<% @page_id = "users" %>
+
+<div class="mx-auto max-w-screen-md px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+  <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">New User</h1>
+  <p class="mt-2 text-sm text-gray-600">
+    The user will receive an email with a link to set their password and finish setting up their account.
+    All users get access to Fact Check Insights.
+  </p>
+
+  <% if @user.errors.any? %>
+    <div class="mt-6 rounded-md bg-red-50 p-4 text-sm text-red-700">
+      <ul class="list-disc pl-5">
+        <% @user.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= form_with model: @user, url: admin_users_path, method: :post, class: "mt-6 space-y-6" do |form| %>
+    <div>
+      <%= form.label :name, class: "block text-sm font-medium text-gray-900" %>
+      <%= form.text_field :name, required: true, class: "mt-1 w-full rounded-md border-2 border-gray-300 py-2 px-3 text-gray-800 focus:border-purple-600 focus:outline-none" %>
+    </div>
+
+    <div>
+      <%= form.label :email, class: "block text-sm font-medium text-gray-900" %>
+      <%= form.email_field :email, required: true, class: "mt-1 w-full rounded-md border-2 border-gray-300 py-2 px-3 text-gray-800 focus:border-purple-600 focus:outline-none" %>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <%= hidden_field_tag "user[media_vault_enabled]", "0", id: nil %>
+      <%= check_box_tag "user[media_vault_enabled]", "1", @media_vault_enabled, id: "user_media_vault_enabled" %>
+      <%= label_tag "user_media_vault_enabled", "Grant access to Media Vault", class: "text-sm text-gray-900" %>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <%= form.submit "Create user", class: "inline-block rounded-sm bg-indigo-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-indigo-700" %>
+      <%= link_to "Cancel", admin_users_path, class: "text-sm text-gray-600" %>
+    </div>
+  <% end %>
+</div>

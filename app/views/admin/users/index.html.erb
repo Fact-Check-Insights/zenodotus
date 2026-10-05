@@ -1,5 +1,8 @@
 <%= turbo_frame_tag "users", target: "_top" do %>
 <div class="overflow-x-auto">
+	<div class="mb-4">
+		<%= link_to "New user", new_admin_user_path, class: "inline-block rounded-sm bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700" %>
+	</div>
 	<%= form_with url: admin_users_path, method: :get do |form| %>
 	<div class="relative w-80">
 		<%= form.search_field :query, class: "appearance-none border-2 pl-10 border-gray-300 hover:border-gray-400 transition-colors rounded-md w-full py-2 px-3 text-gray-800 leading-tight focus:outline-none focus:ring-purple-600 focus:border-purple-600 focus:shadow-outline", placeholder: "Search..." %>

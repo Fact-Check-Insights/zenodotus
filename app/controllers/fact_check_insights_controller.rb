@@ -18,6 +18,10 @@ class FactCheckInsightsController < ApplicationController
           return
         end
 
+        # Users who haven't finished setting up two-factor authentication can't download the corpus yet
+        must_have_mfa_setup
+        return if performed?
+
         if request.format == :json
           file_name = "exports/fact_check_insights.json"
           type = :json
