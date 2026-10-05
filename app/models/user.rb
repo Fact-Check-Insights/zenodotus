@@ -86,6 +86,27 @@ class User < ApplicationRecord
     user
   end
 
+  # Create a User directly from the admin panel, without going through the application process.
+  # The admin vouches for the email address, so it is marked as confirmed.
+  sig { params(name: String, email: String, media_vault: T::Boolean).returns(User) }
+  def self.create_by_admin(name:, email:, media_vault: false)
+    user = self.new({
+      name: name,
+      email: email,
+      # The user will have to change their password immediately. This is just to pass validation.
+      password: Devise.friendly_token,
+    })
+    user.skip_confirmation!
+
+    self.transaction do
+      user.save!
+      user.assign_default_roles
+      user.add_role :media_vault_user if media_vault
+    end
+
+    user
+  end
+
   # All new users are implicitly Insights users.
   # All new users are also "new" until they have completed their initial setup.
   sig { void }

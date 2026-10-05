@@ -126,6 +126,18 @@ class FactCheckInsightsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unauthorized
   end
 
+  test "cannot download data without two-factor authentication set up" do
+    sign_in users(:user_no_totp)
+
+    assert_no_difference "CorpusDownload.count" do
+      get fact_check_insights_download_path(format: :json)
+      assert_redirected_to account_setup_mfa_path
+
+      get fact_check_insights_download_path(format: :zip)
+      assert_redirected_to account_setup_mfa_path
+    end
+  end
+
   test "cannot download data from the Vault hostname" do
     host! Figaro.env.MEDIA_VAULT_HOST
 
