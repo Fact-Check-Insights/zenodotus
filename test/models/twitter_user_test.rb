@@ -56,6 +56,18 @@ class TwitterUserTest < ActiveSupport::TestCase
     assert_nil twitter_user.following_count
   end
 
+  test "updating a twitter user without follower counts keeps the previous counts" do
+    twitter_user = Sources::TwitterUser.create_from_birdsong_hash([@birdsong_user]).first.twitter_user
+    twitter_user.update!({ followers_count: 12_000, following_count: 300 })
+
+    birdsong_user = @birdsong_user.merge("followers_count" => nil, "following_count" => nil)
+    Sources::TwitterUser.create_from_birdsong_hash([birdsong_user])
+
+    twitter_user.reload
+    assert_equal 12_000, twitter_user.followers_count
+    assert_equal 300, twitter_user.following_count
+  end
+
   test "can update twitter user" do
     archive_entity = Sources::TwitterUser.create_from_birdsong_hash([@birdsong_user]).first
 

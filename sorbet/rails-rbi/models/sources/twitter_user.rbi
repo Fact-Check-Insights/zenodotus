@@ -35,19 +35,19 @@ module Sources::TwitterUser::GeneratedAttributeMethods
   sig { returns(T::Boolean) }
   def display_name?; end
 
-  sig { returns(Integer) }
+  sig { returns(T.nilable(Integer)) }
   def followers_count; end
 
-  sig { params(value: T.any(Numeric, ActiveSupport::Duration)).void }
+  sig { params(value: T.nilable(T.any(Numeric, ActiveSupport::Duration))).void }
   def followers_count=(value); end
 
   sig { returns(T::Boolean) }
   def followers_count?; end
 
-  sig { returns(Integer) }
+  sig { returns(T.nilable(Integer)) }
   def following_count; end
 
-  sig { params(value: T.any(Numeric, ActiveSupport::Duration)).void }
+  sig { params(value: T.nilable(T.any(Numeric, ActiveSupport::Duration))).void }
   def following_count=(value); end
 
   sig { returns(T::Boolean) }
