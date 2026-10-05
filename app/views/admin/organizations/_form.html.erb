@@ -1,0 +1,21 @@
+<% if organization.errors.any? %>
+  <div class="mt-6 rounded-md bg-red-50 p-4 text-sm text-red-700">
+    <ul class="list-disc pl-5">
+      <% organization.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: organization, url: organization.persisted? ? admin_organization_path(organization) : admin_organizations_path, class: "mt-6 space-y-6" do |form| %>
+  <div>
+    <%= form.label :name, class: "block text-sm font-medium text-gray-900" %>
+    <%= form.text_field :name, required: true, class: "mt-1 w-full rounded-md border-2 border-gray-300 py-2 px-3 text-gray-800 focus:border-purple-600 focus:outline-none" %>
+  </div>
+
+  <div class="flex items-center gap-4">
+    <%= form.submit organization.persisted? ? "Save" : "Create organization", class: "inline-block rounded-sm bg-indigo-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-indigo-700" %>
+    <%= link_to "Cancel", organization.persisted? ? admin_organization_path(organization) : admin_organizations_path, class: "text-sm text-gray-600" %>
+  </div>
+<% end %>

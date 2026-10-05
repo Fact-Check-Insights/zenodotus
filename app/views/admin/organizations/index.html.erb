@@ -1,0 +1,32 @@
+<% @title_tag = "Organizations" %>
+<% @page_id = "organizations" %>
+
+<div class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">Organizations</h1>
+    <%= link_to "New organization", new_admin_organization_path, class: "inline-block rounded-sm bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700" %>
+  </div>
+
+  <% if @organizations.empty? %>
+    <p class="mt-6 text-sm text-gray-600">There are no organizations yet.</p>
+  <% else %>
+    <div class="mt-6 overflow-x-auto">
+      <table class="min-w-full divide-y-2 divide-gray-200 text-sm">
+        <thead>
+          <tr>
+            <th class="px-4 py-2 font-semibold text-gray-900 text-left">Name</th>
+            <th class="px-4 py-2 font-semibold text-gray-900 text-right">Users</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <% @organizations.each do |organization| %>
+            <tr>
+              <td class="px-4 py-2 font-medium text-gray-900"><%= link_to organization.name, admin_organization_path(organization) %></td>
+              <td class="px-4 py-2 text-right text-gray-700"><%= organization.users_count %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</div>

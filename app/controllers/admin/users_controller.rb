@@ -5,9 +5,9 @@ class Admin::UsersController < AdminController
     @query = params[:query]
 
     if @query.present?
-      @users = User.where("email LIKE ? OR name LIKE ?", "%#{@query}%", "%#{@query}%")
+      @users = User.includes(:organization).where("email LIKE ? OR name LIKE ?", "%#{@query}%", "%#{@query}%")
     else
-      @users = User.all
+      @users = User.includes(:organization)
     end
 
     @pagy_items, @users = pagy_array(
@@ -30,6 +30,7 @@ class Admin::UsersController < AdminController
       name: user_params[:name].to_s.strip,
       email: user_params[:email].to_s.strip,
       media_vault: user_params[:media_vault_enabled] == "1",
+      organization: Organization.find_by(id: user_params[:organization_id]),
     )
     @user.send_setup_instructions
 
@@ -38,6 +39,13 @@ class Admin::UsersController < AdminController
     @user = e.record
     @media_vault_enabled = user_params[:media_vault_enabled] == "1"
     render :new, status: :unprocessable_entity
+  end
+
+  # Only the organization can be changed from the admin panel for now
+  def update
+    @user = User.find(params[:id])
+    @user.update!(organization: Organization.find_by(id: user_params[:organization_id]))
+    redirect_to admin_user_path(@user), notice: "Organization updated."
   end
 
   def reset_mfa
@@ -49,6 +57,6 @@ class Admin::UsersController < AdminController
 private
 
   def user_params
-    params.require(:user).permit(:name, :email, :media_vault_enabled)
+    params.require(:user).permit(:name, :email, :media_vault_enabled, :organization_id)
   end
 end
