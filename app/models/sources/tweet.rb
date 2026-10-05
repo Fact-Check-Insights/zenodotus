@@ -92,17 +92,6 @@ class Sources::Tweet < ApplicationRecord
 
       image_attributes = []
       video_attributes = []
-      screenshot_attributes = {}
-
-      if birdsong_tweet["aws_screenshot_key"].present?
-        downloaded_path = AwsS3Downloader.download_file_in_s3_received_from_hypatia(birdsong_tweet["aws_screenshot_key"])
-        screenshot_attributes = { image: File.open(downloaded_path, binmode: true) }
-      else
-        tempfile = Tempfile.new(binmode: true)
-        tempfile.write(Base64.decode64(birdsong_tweet["screenshot_file"]))
-        screenshot_attributes = { image: File.open(tempfile.path, binmode: true) }
-        tempfile.close!
-      end
 
       if birdsong_tweet["aws_image_keys"].present?
         image_attributes = birdsong_tweet["aws_image_keys"].map do |key|
@@ -145,13 +134,16 @@ class Sources::Tweet < ApplicationRecord
       #   { video: File.open(video_file_name.first, binmode: true), video_type: birdsong_tweet.video_file_type }
       # end
 
-      # TODO: Uncomment this after Birdsong has been migrated to Hypatia
       screenshot_attributes = {}
       if birdsong_tweet["aws_screenshot_key"].present?
         downloaded_path = AwsS3Downloader.download_file_in_s3_received_from_hypatia(birdsong_tweet["aws_screenshot_key"])
         screenshot_attributes = { image: File.open(downloaded_path, binmode: true) } if downloaded_path.present?
       elsif birdsong_tweet["screenshot_file"].present?
-        screenshot_attributes = { image: File.open(birdsong_tweet["screenshot_file"], binmode: true) }
+        # Backwards compatibility for if Hypatia sends over the screenshot in Base64
+        tempfile = Tempfile.new(binmode: true)
+        tempfile.write(Base64.decode64(birdsong_tweet["screenshot_file"]))
+        screenshot_attributes = { image: File.open(tempfile.path, binmode: true) }
+        tempfile.close!
       end
 
       tweet_hash = {

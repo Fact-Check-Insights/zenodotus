@@ -10,6 +10,8 @@ class Sources::TwitterUser < ApplicationRecord
   # The tweets that a TwitterUser have authored
   has_many :tweets, foreign_key: :author_id, dependent: :destroy
 
+  COUNT_ATTRIBUTES = T.let([:followers_count, :following_count].freeze, T::Array[Symbol])
+
   # Create a +TwitterUser+ from a +Birdsong::User+
   #
   # @!scope class
@@ -31,7 +33,9 @@ class Sources::TwitterUser < ApplicationRecord
         #
         # Question: do we want to version this at some point so we can tell what the user had when
         # it was accessed at any given time?
-        twitter_user.update!(twitter_user_hash)
+        #
+        # X doesn't always return follower counts. A missing count is unknown, so keep the last one we had.
+        twitter_user.update!(twitter_user_hash.reject { |key, value| COUNT_ATTRIBUTES.include?(key) && value.nil? })
 
         # We return the ArchiveEntity, because it's expected
         twitter_user = twitter_user.archive_entity

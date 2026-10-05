@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_05_120000) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_05_150000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
   enable_extension "pgcrypto"
@@ -575,8 +575,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_05_120000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.jsonb "profile_image_data"
-    t.integer "followers_count", null: false
-    t.integer "following_count", null: false
+    t.integer "followers_count"
+    t.integer "following_count"
   end
 
   create_table "twitter_videos", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
