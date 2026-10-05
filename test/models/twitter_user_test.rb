@@ -46,6 +46,16 @@ class TwitterUserTest < ActiveSupport::TestCase
     assert_not_nil archive_entity.twitter_user.profile_image
   end
 
+  test "can create a twitter user without follower counts" do
+    birdsong_user = @birdsong_user.merge("followers_count" => nil, "following_count" => nil)
+
+    twitter_user = Sources::TwitterUser.create_from_birdsong_hash([birdsong_user]).first.twitter_user
+
+    assert_predicate twitter_user, :persisted?
+    assert_nil twitter_user.followers_count
+    assert_nil twitter_user.following_count
+  end
+
   test "can update twitter user" do
     archive_entity = Sources::TwitterUser.create_from_birdsong_hash([@birdsong_user]).first
 
