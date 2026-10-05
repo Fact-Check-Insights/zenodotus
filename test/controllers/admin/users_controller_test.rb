@@ -47,6 +47,14 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     assert_predicate user, :is_media_vault_user?
   end
 
+  test "admin can create a user in an organization" do
+    sign_in users(:admin)
+
+    post admin_users_path, params: { user: { name: "Org Person", email: "org.person@example.com", organization_id: organizations(:newsroom).id } }
+
+    assert_equal organizations(:newsroom), User.find_by(email: "org.person@example.com").organization
+  end
+
   test "creating a user with an existing email re-renders the form" do
     sign_in users(:admin)
 

@@ -409,6 +409,13 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_05_150000) do
     t.index ["media_review_author_id"], name: "index_media_reviews_on_media_review_author_id"
   end
 
+  create_table "organizations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_organizations_on_name", unique: true
+  end
+
   create_table "pg_search_documents", force: :cascade do |t|
     t.text "content"
     t.string "searchable_type"
@@ -626,8 +633,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_05_150000) do
     t.uuid "remote_key_id"
     t.string "locale"
     t.datetime "privacy_policy_accepted_at"
+    t.uuid "organization_id"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["organization_id"], name: "index_users_on_organization_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
     t.index ["webauthn_id"], name: "index_users_on_webauthn_id", unique: true
@@ -712,6 +721,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_05_150000) do
   add_foreign_key "twitter_images", "tweets"
   add_foreign_key "twitter_videos", "tweets"
   add_foreign_key "user_remote_keys", "users"
+  add_foreign_key "users", "organizations"
   add_foreign_key "webauthn_credentials", "users"
   add_foreign_key "youtube_videos", "youtube_posts"
 end

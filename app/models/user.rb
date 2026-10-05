@@ -8,6 +8,8 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :trackable, :lockable, :confirmable
 
+  belongs_to :organization, optional: true
+
   has_many :webauthn_credentials, dependent: :destroy
   has_many :user_remote_keys, dependent: :destroy
 
@@ -88,11 +90,12 @@ class User < ApplicationRecord
 
   # Create a User directly from the admin panel, without going through the application process.
   # The admin vouches for the email address, so it is marked as confirmed.
-  sig { params(name: String, email: String, media_vault: T::Boolean).returns(User) }
-  def self.create_by_admin(name:, email:, media_vault: false)
+  sig { params(name: String, email: String, media_vault: T::Boolean, organization: T.nilable(Organization)).returns(User) }
+  def self.create_by_admin(name:, email:, media_vault: false, organization: nil)
     user = self.new({
       name: name,
       email: email,
+      organization: organization,
       # The user will have to change their password immediately. This is just to pass validation.
       password: Devise.friendly_token,
     })
