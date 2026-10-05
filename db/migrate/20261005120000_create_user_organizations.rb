@@ -1,4 +1,5 @@
-class CreateOrganizations < ActiveRecord::Migration[7.2]
+# Named to avoid clashing with the 2022 `CreateOrganizations` migration, which was later reverted.
+class CreateUserOrganizations < ActiveRecord::Migration[7.2]
   def change
     create_table :organizations, id: :uuid do |t|
       t.string :name, null: false
