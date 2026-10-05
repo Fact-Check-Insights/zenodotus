@@ -1,0 +1,90 @@
+<% @title_tag = @organization.name %>
+<% @page_id = "organizations" %>
+<% metrics = OrganizationUsageReport::METRICS %>
+<% totals = @report.totals %>
+
+<div class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+  <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div>
+      <p class="text-sm text-gray-500"><%= link_to "Organizations", admin_organizations_path %></p>
+      <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl"><%= @organization.name %></h1>
+      <p class="text-sm text-gray-600"><%= pluralize(@report.users.size, "user") %></p>
+    </div>
+    <%= link_to "Edit", edit_admin_organization_path(@organization), class: "inline-block rounded-sm border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+  </div>
+
+  <%= form_with url: admin_organization_path(@organization), method: :get, class: "mt-8 flex flex-wrap items-end gap-4" do |form| %>
+    <div>
+      <%= form.label :from, "From", class: "block text-sm font-medium text-gray-900" %>
+      <%= form.date_field :from, value: @report.from, class: "mt-1 rounded-md border-2 border-gray-300 py-1 px-2" %>
+    </div>
+    <div>
+      <%= form.label :to, "To", class: "block text-sm font-medium text-gray-900" %>
+      <%= form.date_field :to, value: @report.to, class: "mt-1 rounded-md border-2 border-gray-300 py-1 px-2" %>
+    </div>
+    <%= form.submit "Update", name: nil, class: "inline-block rounded-sm bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700" %>
+    <%= link_to "Download CSV", admin_organization_path(@organization, format: :csv, from: @report.from, to: @report.to), class: "text-sm text-indigo-600" %>
+  <% end %>
+  <p class="mt-2 text-xs text-gray-500">Dates are in UTC. Usage is counted for the users currently in this organization.</p>
+
+  <dl class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+    <% metrics.each do |key, label| %>
+      <div class="rounded-md border border-gray-200 p-4">
+        <dt class="text-xs text-gray-600"><%= label %></dt>
+        <dd class="text-2xl font-semibold text-gray-900"><%= number_with_delimiter(totals[key]) %></dd>
+      </div>
+    <% end %>
+  </dl>
+
+  <h2 class="mt-12 text-lg font-semibold text-gray-900">By month</h2>
+  <div class="mt-4 overflow-x-auto">
+    <table class="min-w-full divide-y-2 divide-gray-200 text-sm">
+      <thead>
+        <tr>
+          <th class="px-4 py-2 font-semibold text-gray-900 text-left">Month</th>
+          <% metrics.each_value do |label| %>
+            <th class="px-4 py-2 font-semibold text-gray-900 text-right"><%= label %></th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <% @report.by_month.each do |month, counts| %>
+          <tr>
+            <td class="px-4 py-2 text-gray-900 whitespace-nowrap"><%= month.strftime("%Y-%m") %></td>
+            <% counts.each_value do |count| %>
+              <td class="px-4 py-2 text-right text-gray-700"><%= number_with_delimiter(count) %></td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="mt-12 text-lg font-semibold text-gray-900">By user</h2>
+  <% if @report.users.empty? %>
+    <p class="mt-4 text-sm text-gray-600">This organization has no users yet. Assign them from each user's page in <%= link_to "Users", admin_users_path %>.</p>
+  <% else %>
+    <div class="mt-4 overflow-x-auto">
+      <table class="min-w-full divide-y-2 divide-gray-200 text-sm">
+        <thead>
+          <tr>
+            <th class="px-4 py-2 font-semibold text-gray-900 text-left">User</th>
+            <% metrics.each_value do |label| %>
+              <th class="px-4 py-2 font-semibold text-gray-900 text-right"><%= label %></th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <% @report.by_user.each do |user, counts| %>
+            <tr>
+              <td class="px-4 py-2 text-gray-900 whitespace-nowrap"><%= link_to user.name, admin_user_path(user) %> <span class="text-gray-500"><%= user.email %></span></td>
+              <% counts.each_value do |count| %>
+                <td class="px-4 py-2 text-right text-gray-700"><%= number_with_delimiter(count) %></td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</div>

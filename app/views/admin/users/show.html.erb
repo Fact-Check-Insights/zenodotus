@@ -12,6 +12,19 @@
             </div>
 
             <div class="grid grid-cols-1 gap-1 py-3 sm:grid-cols-3 sm:gap-4">
+              <dt class="font-medium text-gray-900">Organization</dt>
+              <dd class="text-gray-700 sm:col-span-2">
+                <%= form_with model: @user, url: admin_user_path(@user), method: :patch, class: "flex items-center gap-2" do |form| %>
+                  <%= form.collection_select :organization_id, Organization.order(:name), :id, :name, { include_blank: "No organization" }, class: "rounded-md border-2 border-gray-300 py-1 px-2 text-gray-800" %>
+                  <%= form.submit "Save", class: "inline-block rounded-sm bg-indigo-600 px-3 py-1 text-xs font-medium text-white hover:bg-indigo-700" %>
+                <% end %>
+                <% if @user.organization %>
+                  <%= link_to "View usage", admin_organization_path(@user.organization), class: "text-xs text-indigo-600" %>
+                <% end %>
+              </dd>
+            </div>
+
+            <div class="grid grid-cols-1 gap-1 py-3 sm:grid-cols-3 sm:gap-4">
               <dt class="font-medium text-gray-900">Created At</dt>
               <dd class="text-gray-700 sm:col-span-2"><%= @user.created_at %></dd>
             </div>

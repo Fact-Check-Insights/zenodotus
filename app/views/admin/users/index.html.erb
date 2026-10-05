@@ -52,6 +52,7 @@
       <tr>
         <th class="px-4 py-2 font-semibold whitespace-nowrap text-gray-900 text-left">Name</th>
         <th class="px-4 py-2 font-semibold whitespace-nowrap text-gray-900 text-left ">Email</th>
+        <th class="px-4 py-2 font-semibold whitespace-nowrap text-gray-900 text-left ">Organization</th>
         <th class="px-4 py-2"></th>
       </tr>
     </thead>
@@ -64,6 +65,7 @@
 							<%= link_to user.name, admin_user_path(user) %>
 						</td>
 						<td class="px-4 py-2 whitespace-nowrap text-gray-700"><%= user.email %></td>
+						<td class="px-4 py-2 whitespace-nowrap text-gray-700"><%= user.organization&.name %></td>
 						<td class="px-4 py-2 whitespace-nowrap">
 							<%# link_to "Show", user %>
 							<%# link_to "Edit", edit_user_path(user) %>
