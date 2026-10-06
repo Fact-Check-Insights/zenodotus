@@ -1,3 +1,5 @@
+require "zlib"
+
 class Scrape < ApplicationRecord
   class MediaReviewItemNotFoundError < StandardError
     extend T::Sig
@@ -30,10 +32,31 @@ class Scrape < ApplicationRecord
     ScrapeJob.perform_later(self)
   end
 
+  # Reparte cada scrape entre Grigori y Mitropoulos.
+  # MITROPOULOS_SHARE en .env: fracción 0.0-1.0 (0.2 = 20%).
+  # Determinista por hash del id (uuid): el mismo scrape siempre va al mismo destino.
+  # Sin la variable (o a 0), todo sigue a Grigori como antes.
+  sig { returns(Hash) }
+  def perform
+    if route_to_mitropoulos?
+      perform_via_mitropoulos
+    else
+      perform_via_hypatia
+    end
+  end
+
+  sig { returns(T::Boolean) }
+  def route_to_mitropoulos?
+    share = Figaro.env.MITROPOULOS_SHARE.to_f
+    return false if share <= 0
+    return true if share >= 1
+    (Zlib.crc32(self.id.to_s) % 100) < (share * 100).round
+  end
+
   # Make the call to Hypatia, the return should be { success: "true" } after parsing
   # This does it synchronously. If you're calling this you probably mean to call `enqueue`
   sig { returns(Hash) }
-  def perform
+  def perform_via_hypatia
     params = { url: { auth_key: Figaro.env.HYPATIA_AUTH_KEY, url: self.url, callback_id: self.id } }
 
     # Move this to the Scrape model so they're easily resubmittable
@@ -59,6 +82,52 @@ class Scrape < ApplicationRecord
     end
 
     JSON.parse(response.body)
+  end
+
+  # Rama Mitropoulos: POST /scrape con token client-credentials (cacheado 4 min).
+  # Semántica igual que la rama Hypatia: 202 = aceptado, 400+code 10 = removed
+  # sin reintento, resto = mark_error + raise (reintenta Sidekiq).
+  sig { returns(Hash) }
+  def perform_via_mitropoulos
+    response = Typhoeus.post(
+      "#{Figaro.env.MITROPOULOS_URL}/scrape",
+      headers: {
+        "Authorization" => "Bearer #{mitropoulos_token}",
+        "Content-Type" => "application/json"
+      },
+      body: JSON.generate({ url: self.url, callback_id: self.id })
+    )
+
+    parsed = JSON.parse(response.body)
+
+    if response.code == 202
+      parsed
+    elsif response.code == 400 && parsed.is_a?(Hash) && parsed["code"] == 10
+      logger.info("Marking: #{self.url} as removed (via Mitropoulos).")
+      self.fulfill([{ status: "removed" }])
+      parsed
+    else
+      self.mark_error
+      raise Scrape::ExternalServerError.new("Error: #{response.code} returned from Mitropoulos.")
+    end
+  end
+
+  sig { returns(String) }
+  def mitropoulos_token
+    Rails.cache.fetch("mitropoulos_client_token", expires_in: 4.minutes, race_condition_ttl: 10.seconds) do
+      auth = Typhoeus.post(
+        Figaro.env.MITROPOULOS_TOKEN_URL,
+        body: {
+          grant_type: "client_credentials",
+          client_id: Figaro.env.MITROPOULOS_CLIENT_ID,
+          client_secret: Figaro.env.MITROPOULOS_CLIENT_SECRET
+        }
+      )
+      unless auth.code == 200
+        raise Scrape::ExternalServerError.new("Mitropoulos auth failed: #{auth.code}.")
+      end
+      JSON.parse(auth.body)["access_token"]
+    end
   end
 
   sig { void }
