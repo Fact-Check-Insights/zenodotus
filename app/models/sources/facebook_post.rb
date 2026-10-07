@@ -105,16 +105,15 @@ class Sources::FacebookPost < ApplicationRecord
       end
 
       if forki_post["aws_image_keys"].present?
-        # `aws_image_keys` is a LIST: map over it like the video branch below.
-        # Passing the array straight to the downloader raises
-        # `Parameter 'url': Expected type T.nilable(String), got type Array`,
-        # which failed the whole archive for any Facebook post with images.
-        image_attributes = forki_post["aws_image_keys"].map do |key|
+        # `aws_image_keys` is polymorphic: Forki/Hypatia sends ONE key as a
+        # string, our own Antena path sends a list. Array() normalises both
+        # (and turns nil into []), so neither shape raises.
+        image_attributes = Array(forki_post["aws_image_keys"]).map do |key|
           downloaded_path = AwsS3Downloader.download_file_in_s3_received_from_hypatia(key)
           { image: File.open(downloaded_path, binmode: true) }
         end
       elsif forki_post["aws_video_keys"].present?
-        video_attributes = forki_post["aws_video_keys"].map do |key|
+        video_attributes = Array(forki_post["aws_video_keys"]).map do |key|
           downloaded_path = AwsS3Downloader.download_file_in_s3_received_from_hypatia(key)
           { video: File.open(downloaded_path, binmode: true) }
         end
