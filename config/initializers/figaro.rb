@@ -52,8 +52,12 @@ if Figaro.env.HONEYBADGER_API_KEY.blank? == false
   Figaro.require_keys("HONEYBADGER_API_KEY_CSV_JSON_GENERATION_ADDRESS")
 end
 
-Figaro.require_keys("OLLAMA_URL")
-Figaro.require_keys("OLLAMA_PASSWORD")
+Figaro.require_keys("LLM_API_KEY")
+Figaro.require_keys("LLM_ENDPOINT")
+Figaro.require_keys("LLM_MODEL")
+Figaro.require_keys("LANGFUSE_HOST")
+Figaro.require_keys("LANGFUSE_PUBLIC_KEY")
+Figaro.require_keys("LANGFUSE_SECRET_KEY")
 Figaro.require_keys("FACTCHECK_TOOLS_API_KEY")
 
 Figaro.require_keys("VIPS_WARNING") # This should always be set to "0" so that the logs are not spammed with ICPT warnings

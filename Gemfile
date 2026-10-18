@@ -258,8 +258,9 @@ gem "async", "2.12.0"
 gem "actionpack-action_caching"
 gem "dalli" # For memcached caching
 
-# OLLama categorization
-gem "ollama-ai", git: "https://github.com/cguess/ollama-ai", branch: "basic-auth"
+# LLM categorization (OpenAI-compatible) + Langfuse prompt management
+gem "openai", "~> 0.103.0"
+gem "langfuse-ruby", "~> 0.2.1"
 gem "acts-as-taggable-on" # For caegorization
 
 # Extra locales
