@@ -8,7 +8,7 @@ require_relative "../config/environment"
 require_relative "mocks/hypatia_mock"
 require_relative "mocks/aws_s3_mock"
 require_relative "mocks/recaptcha_mock"
-require_relative "mocks/ollama_mock"
+require_relative "mocks/llm_mock"
 require_relative "mocks/remote_url_mock"
 
 include HypatiaMock
@@ -17,8 +17,8 @@ include AwsS3Mock
 # Applications are only accepted with a passing reCAPTCHA assessment.
 RecaptchaMock.install!
 
-# Archive items are categorized by Ollama on create.
-OllamaMock.install!
+# Archive items are categorized by an OpenAI-compatible LLM on create.
+LlmMock.install!
 
 # Searching by URL downloads the file first.
 RemoteUrlMock.install!
