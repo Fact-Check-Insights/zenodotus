@@ -235,7 +235,7 @@ GEM
       unaccent (~> 0.3)
     country_select (10.0.0)
       countries (> 5.0, < 8.0)
-    crass (1.0.6)
+    crass (1.0.7)
     cuprite (0.14.2)
       capybara (~> 3.0)
       ferrum (~> 0.12.0)
