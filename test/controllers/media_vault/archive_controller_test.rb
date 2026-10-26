@@ -40,11 +40,15 @@ class MediaVault::ArchiveControllerTest < ActionDispatch::IntegrationTest
     model_for_facebook_url = ArchiveItem.model_for_url("https://www.facebook.com/barackobama/videos/632588137735860/")
     model_for_youtube_url = ArchiveItem.model_for_url("https://www.youtube.com/watch?v=Df7UtQTFUMQ/")
     model_for_tiktok_url = ArchiveItem.model_for_url("https://www.tiktok.com/@guess/video/7091753416032128299")
+    model_for_bluesky_url = ArchiveItem.model_for_url("https://bsky.app/profile/maldita.es/post/3l5xyzabcde")
+    model_for_telegram_url = ArchiveItem.model_for_url("https://t.me/ConfirmadoTransparencia/1764")
     assert_equal model_for_twitter_url, Sources::Tweet
     assert_equal model_for_instagram_url, Sources::InstagramPost
     assert_equal model_for_facebook_url, Sources::FacebookPost
     assert_equal model_for_tiktok_url, Sources::TikTokPost
     assert_equal model_for_youtube_url, Sources::YoutubePost
+    assert_equal model_for_bluesky_url, Sources::BlueskyPost
+    assert_equal model_for_telegram_url, Sources::TelegramPost
   end
 
   test "only a media vault user or super user can submit a url" do

@@ -1,0 +1,42 @@
+{
+  "https://t.me/ConfirmadoTransparencia/1764": {
+    "scrape_id": null,
+    "scrape_result": [
+      {
+        "id": "1764",
+        "post": {
+          "id": "1764",
+          "text": "Esto es una prueba de archivo de un mensaje de Telegram",
+          "language": null,
+          "created_at": "2024-05-01T12:00:00+00:00",
+          "url": "https://t.me/ConfirmadoTransparencia/1764",
+          "object_type": "telegram",
+          "engagement": null,
+          "author": {
+            "id": "1234567890",
+            "name": "Confirmado Transparencia",
+            "username": "ConfirmadoTransparencia",
+            "created_at": null,
+            "description": "",
+            "profile_link": "https://t.me/ConfirmadoTransparencia",
+            "profile_image_url": "",
+            "verified": false,
+            "followers_count": 0,
+            "following_count": 0,
+            "posts_count": 0,
+            "aws_profile_image_key": "telegram_avatar_a82e28ab-1ace-4555-bec5-59f5947b5b78.jpg",
+            "profile_image": null
+          },
+          "image_files": null,
+          "video_files": null,
+          "video_preview_images": null,
+          "screenshot_file": null,
+          "aws_image_keys": null,
+          "aws_video_keys": null,
+          "aws_video_preview_keys": null,
+          "aws_screenshot_key": null
+        }
+      }
+    ]
+  }
+}

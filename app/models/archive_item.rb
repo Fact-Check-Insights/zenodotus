@@ -13,7 +13,7 @@ class ArchiveItem < ApplicationRecord
     end
   end # This is the property that will be used to categorize the model instance
 
-  delegated_type :archivable_item, types: %w[Sources::Tweet Sources::InstagramPost Sources::FacebookPost Sources::YoutubePost Sources::TikTokPost]
+  delegated_type :archivable_item, types: %w[Sources::Tweet Sources::InstagramPost Sources::FacebookPost Sources::YoutubePost Sources::TikTokPost Sources::BlueskyPost Sources::TelegramPost]
   delegate :service_id, to: :archivable_item
   delegate :images, to: :archivable_item
   delegate :videos, to: :archivable_item
@@ -174,6 +174,24 @@ class ArchiveItem < ApplicationRecord
   sig { returns(T.nilable(Sources::TikTokPost)) }
   def tik_tok_post
     self.sources_tik_tok_post
+  end
+
+  # A helper function to make it easier to access the item, instead of `.sources_bluesky_post`
+  # this allows just the use of `.bluesky_post`
+  #
+  # @returns +Sources::BlueskyPost+
+  sig { returns(T.nilable(Sources::BlueskyPost)) }
+  def bluesky_post
+    self.sources_bluesky_post
+  end
+
+  # A helper function to make it easier to access the item, instead of `.sources_telegram_post`
+  # this allows just the use of `.telegram_post`
+  #
+  # @returns +Sources::TelegramPost+
+  sig { returns(T.nilable(Sources::TelegramPost)) }
+  def telegram_post
+    self.sources_telegram_post
   end
 
   # Proxy for the normalized representation of this related archivable item for use in the view

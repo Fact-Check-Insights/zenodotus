@@ -1,7 +1,7 @@
 # typed: strict
 
 class ArchiveEntity < ApplicationRecord
-  delegated_type :archivable_entity, types: %w[Sources::TwitterUser Sources::InstagramUser Sources::FacebookUser Sources::YoutubeChannel Sources::TikTokUser]
+  delegated_type :archivable_entity, types: %w[Sources::TwitterUser Sources::InstagramUser Sources::FacebookUser Sources::YoutubeChannel Sources::TikTokUser Sources::BlueskyUser Sources::TelegramUser]
   delegate :service_id, to: :archivable_entity
 
   # Note: You may want to use `alias` or `alias_method` here instead of the following functions
@@ -50,5 +50,23 @@ class ArchiveEntity < ApplicationRecord
   sig { returns(T.nilable(Sources::TikTokUser)) }
   def tiktok_user
     self.sources_tik_tok_user
+  end
+
+  # A helper function to make it easier to access the user, instead of `.sources_bluesky_user`
+  # this allows just the use of `.bluesky_user`
+  #
+  # @returns +Sources::BlueskyUser+
+  sig { returns(T.nilable(Sources::BlueskyUser)) }
+  def bluesky_user
+    self.sources_bluesky_user
+  end
+
+  # A helper function to make it easier to access the user, instead of `.sources_telegram_user`
+  # this allows just the use of `.telegram_user`
+  #
+  # @returns +Sources::TelegramUser+
+  sig { returns(T.nilable(Sources::TelegramUser)) }
+  def telegram_user
+    self.sources_telegram_user
   end
 end
