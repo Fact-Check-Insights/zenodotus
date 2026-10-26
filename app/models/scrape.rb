@@ -14,7 +14,7 @@ class Scrape < ApplicationRecord
   end
 
   enum scrape_type: {
-    twitter: "twitter", instagram: "instagram", facebook: "facebook", youtube: "youtube", tiktok: "tiktok"
+    twitter: "twitter", instagram: "instagram", facebook: "facebook", youtube: "youtube", tiktok: "tiktok", bluesky: "bluesky", telegram: "telegram"
     }, _prefix: true
 
   enum initiated_from: [ "site", "plugin", "media_review" ]

@@ -13,6 +13,8 @@ class MediaSource
       Youtube = new
       Twitter = new
       TikTok = new
+      Bluesky = new
+      Telegram = new
     end
   end
 

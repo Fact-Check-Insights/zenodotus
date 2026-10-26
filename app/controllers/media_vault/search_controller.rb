@@ -105,6 +105,8 @@ private
       Sources::FacebookPost,
       Sources::YoutubePost,
       Sources::TikTokPost,
+      Sources::BlueskyPost,
+      Sources::TelegramPost,
     ]
 
     author_models = [
@@ -113,6 +115,8 @@ private
       Sources::TwitterUser,
       Sources::YoutubeChannel,
       Sources::TikTokUser,
+      Sources::BlueskyUser,
+      Sources::TelegramUser,
     ]
 
     @post_results = []
