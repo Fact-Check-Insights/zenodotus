@@ -72,6 +72,41 @@ class FacebookPostTest < ActiveSupport::TestCase
     assert_not_empty archive_item.image_hashes
   end
 
+  # `aws_image_keys` is polymorphic: the legacy Forki path sends ONE key as a
+  # bare string, the Antena path sends a list. Both shapes must archive.
+  test "accepts aws_image_keys as a string and as a list" do
+    [
+      ["string", "facebook_media_only_key.jpg"],
+      ["list", ["facebook_media_only_key.jpg"]],
+    ].each do |shape, keys|
+      post_id = shape == "list" ? "1234501" : "1234502"
+      forki_post = [{
+        "id" => post_id,
+        "post" => {
+          "id" => post_id,
+          "url" => "https://www.facebook.com/Meta/photos/#{post_id}",
+          "text" => "shape: #{shape}",
+          "created_at" => 1635464082,
+          "aws_image_keys" => keys,
+          "aws_video_keys" => nil,
+          "aws_screenshot_key" => "facebook_media_shot_#{post_id}.png",
+          "image_file" => nil,
+          "video_file" => nil,
+          "num_comments" => 0,
+          "num_shares" => 0,
+          "num_views" => 0,
+          "reactions" => { "num_likes" => 1 },
+          "user" => { "id" => "9#{post_id}", "name" => "Shape Tester" },
+        },
+      }]
+
+      archive_item = Sources::FacebookPost.create_from_forki_hash(forki_post).first
+
+      assert_not_nil archive_item, "aws_image_keys as #{shape} should archive"
+      assert_equal 1, archive_item.facebook_post.images.count
+    end
+  end
+
   test "can archive video from Facebook post" do
     archive_item = Sources::FacebookPost.create_from_forki_hash(@@forki_video_post).first
     assert_not_nil archive_item
