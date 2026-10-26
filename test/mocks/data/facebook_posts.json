@@ -6,7 +6,9 @@
         "id": "336596487901950",
         "post": {
           "id": "336596487901950",
-          "aws_image_keys": "facebook_media_7e3dbb36-586a-4a81-96c2-253d0a3977b7.png",
+          "aws_image_keys": [
+            "facebook_media_7e3dbb36-586a-4a81-96c2-253d0a3977b7.png"
+          ],
           "aws_screenshot_key": "facebook_screenshot_f72f056d-8e79-4b57-ad5f-7d9d0f8e59c0.png",
           "aws_video_key": null,
           "aws_video_preview_key": null,
@@ -98,7 +100,9 @@
         "id": "460964425465155",
         "post": {
           "id": "460964425465155",
-          "aws_image_keys": "facebook_media_ccdf7850-6378-48be-96a8-3963ecee14cb.jpg",
+          "aws_image_keys": [
+            "facebook_media_ccdf7850-6378-48be-96a8-3963ecee14cb.jpg"
+          ],
           "aws_screenshot_key": "facebook_screenshot_8cd57f61-d85c-4a8a-a871-99930617349a.png",
           "aws_video_key": null,
           "aws_video_preview_key": null,
