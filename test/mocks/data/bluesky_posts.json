@@ -1,0 +1,94 @@
+{
+  "https://bsky.app/profile/maldita.es/post/3l5xyzabcde": {
+    "scrape_id": null,
+    "scrape_result": [
+      {
+        "id": "at://did:plc:abc123/app.bsky.feed.post/3l5xyzabcde",
+        "post": {
+          "id": "at://did:plc:abc123/app.bsky.feed.post/3l5xyzabcde",
+          "text": "Esto es una prueba de archivo de Bluesky con una imagen",
+          "language": "es",
+          "created_at": "2024-05-01T12:00:00+00:00",
+          "url": "https://bsky.app/profile/maldita.es/post/3l5xyzabcde",
+          "object_type": "bluesky",
+          "number_of_likes": 42,
+          "number_of_reposts": 7,
+          "number_of_replies": 3,
+          "number_of_quotes": 1,
+          "author": {
+            "id": "did:plc:abc123",
+            "name": "Maldita.es",
+            "username": "maldita.es",
+            "created_at": "2023-01-01T00:00:00+00:00",
+            "description": "Periodismo para que no te la cuelen",
+            "profile_link": "https://bsky.app/profile/maldita.es",
+            "profile_image_url": "https://cdn.bsky.app/img/avatar/plain/did:plc:abc123/avatar@jpeg",
+            "verified": false,
+            "followers_count": 50000,
+            "following_count": 120,
+            "posts_count": 900,
+            "aws_profile_image_key": "bluesky_avatar_d94b6776-e8a1-4fc8-b9bd-3c39c98cc653.jpg",
+            "profile_image": null
+          },
+          "image_files": null,
+          "video_files": null,
+          "video_preview_images": null,
+          "screenshot_file": null,
+          "aws_image_keys": [
+            "bluesky_media_6d92980c-e8a1-4933-b9aa-d9c8b7700cae.jpg"
+          ],
+          "aws_video_keys": null,
+          "aws_video_preview_keys": null,
+          "aws_screenshot_key": null
+        }
+      }
+    ]
+  },
+  "https://bsky.app/profile/maldita.es/post/3l5videoabc": {
+    "scrape_id": null,
+    "scrape_result": [
+      {
+        "id": "at://did:plc:abc123/app.bsky.feed.post/3l5videoabc",
+        "post": {
+          "id": "at://did:plc:abc123/app.bsky.feed.post/3l5videoabc",
+          "text": "Un post de Bluesky con video",
+          "language": "es",
+          "created_at": "2024-05-02T12:00:00+00:00",
+          "url": "https://bsky.app/profile/maldita.es/post/3l5videoabc",
+          "object_type": "bluesky",
+          "number_of_likes": 10,
+          "number_of_reposts": 2,
+          "number_of_replies": 0,
+          "number_of_quotes": 0,
+          "author": {
+            "id": "did:plc:abc123",
+            "name": "Maldita.es",
+            "username": "maldita.es",
+            "created_at": "2023-01-01T00:00:00+00:00",
+            "description": "Periodismo para que no te la cuelen",
+            "profile_link": "https://bsky.app/profile/maldita.es",
+            "profile_image_url": "https://cdn.bsky.app/img/avatar/plain/did:plc:abc123/avatar@jpeg",
+            "verified": false,
+            "followers_count": 50000,
+            "following_count": 120,
+            "posts_count": 900,
+            "aws_profile_image_key": "bluesky_avatar_d94b6776-e8a1-4fc8-b9bd-3c39c98cc653.jpg",
+            "profile_image": null
+          },
+          "image_files": null,
+          "video_files": null,
+          "video_preview_images": null,
+          "screenshot_file": null,
+          "aws_image_keys": null,
+          "aws_video_keys": [
+            "bluesky_media_19c5e0b0-5e40-4d8b-b1b8-d9c8b7700cae.mp4"
+          ],
+          "aws_video_preview_keys": [
+            "bluesky_poster_5f6a7b8c-9d0e-4f1a-b2c3-d4e5f6a7b8c9.png"
+          ],
+          "aws_screenshot_key": null
+        }
+      }
+    ]
+  }
+}

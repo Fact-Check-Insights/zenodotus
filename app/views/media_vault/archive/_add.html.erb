@@ -28,6 +28,14 @@
               <div class="search-box__toggle-mode-message">
                 <%= t("dashboard.archive_a_url_of_a_social_media") %>
               </div>
+              <div class="pt-3">
+                <div class="search-box__form__label"><%= t("dashboard.accepted_networks") %></div>
+                <div class="flex items-center gap-3 pt-1 text-black">
+                  <% [["twitter", "Twitter"], ["facebook", "Facebook"], ["instagram", "Instagram"], ["youtube", "YouTube"], ["tiktok", "TikTok"], ["bluesky", "Bluesky"], ["telegram", "Telegram"]].each do |id, name| %>
+                    <%= use_svg id, svg_attrs: { class: "w-4 h-4", aria: { hidden: true } }, title: name %>
+                  <% end %>
+                </div>
+              </div>
               <% unless is_myvault %>
                 <div class="mt-4">
                   <%= f.check_box :private, class: "mr-2" %>

@@ -14,6 +14,7 @@ en:
     archive: "Archive"
     archived: "Archived"
     url_to_archive: "URL To Archive"
+    accepted_networks: "Accepted networks"
     published_on: "Published on"
     archived_at: "Archived at"
     view_media_detail: "View media detail"

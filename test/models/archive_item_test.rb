@@ -181,6 +181,12 @@ class ArchiveItemTest < ActionDispatch::IntegrationTest
 
     url = "https://www.tiktok.com/@guess/video/7091753416032128299"
     assert_equal Sources::TikTokPost, ArchiveItem.model_for_url(url)
+
+    url = "https://bsky.app/profile/maldita.es/post/3l5xyzabcde"
+    assert_equal Sources::BlueskyPost, ArchiveItem.model_for_url(url)
+
+    url = "https://t.me/ConfirmadoTransparencia/1764"
+    assert_equal Sources::TelegramPost, ArchiveItem.model_for_url(url)
   end
 
   test "a url is added to the archive item" do

@@ -31,6 +31,16 @@ class MediaVault::AuthorsController < MediaVaultController
       author_source_model_name: "TikTokUser",
       archive_item_model_name:  "TikTokPost",
       author_name_method:       "display_name",
+    },
+    bluesky: {
+      author_source_model_name: "BlueskyUser",
+      archive_item_model_name:  "BlueskyPost",
+      author_name_method:       "display_name",
+    },
+    telegram: {
+      author_source_model_name: "TelegramUser",
+      archive_item_model_name:  "TelegramPost",
+      author_name_method:       "display_name",
     }
   }
 
