@@ -19,6 +19,7 @@ es:
       to: "a"
       switch_to: "Cambiar a %{title}"
       admin: "Administración"
+      scrape_status: "Estado de scrapings"
       settings: "Configuración"
       logout: "Cerrar sesión"
       request_access: "Solicitar acceso"

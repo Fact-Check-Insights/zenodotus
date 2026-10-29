@@ -1,0 +1,17 @@
+en:
+  scrape_status:
+    title: "Scrape status"
+    request: "request"
+    no_scrapes: "You haven't requested any scrapes yet."
+    columns:
+      status: "Status"
+      link: "Link"
+      requested_at: "Date of request"
+      result: "Result"
+    statuses:
+      pending: "Pending"
+      completed: "Completed"
+      error: "Error"
+      removed: "Removed"
+    view_media: "View in MediaVault"
+    requeue: "Requeue"

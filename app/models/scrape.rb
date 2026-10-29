@@ -25,6 +25,17 @@ class Scrape < ApplicationRecord
 
   after_create :send_notification
 
+  # A single status for display, derived from the scrape's flags.
+  # `error` is checked before `fulfilled` because `mark_error` sets it without fulfilling the scrape.
+  sig { returns(Symbol) }
+  def status
+    return :removed if self.removed
+    return :error if self.error
+    return :completed if self.fulfilled
+
+    :pending
+  end
+
   # Enqueue the scraping callout to Hypatia into the ActiveJob queue
   # TODO: Eventually this should be the main interface to kicking it off, but for now... no
   sig { returns(ScrapeJob) }
