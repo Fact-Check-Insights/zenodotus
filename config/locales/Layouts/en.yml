@@ -19,6 +19,7 @@ en:
       to: "to"
       switch_to: "Switch to %{title}"
       admin: "Admin"
+      scrape_status: "Scrape status"
       settings: "Settings"
       logout: "Logout"
       request_access: "Request access"

@@ -59,6 +59,7 @@ video_test/
 dump.rdb
 
 .env
+.env.*
 
 /google-feed*
 

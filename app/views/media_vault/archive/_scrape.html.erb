@@ -1,7 +1,15 @@
-<tr>
-	<td><%= scrape.url %></td>
-	<td><%= scrape.fulfilled %></td>
-	<td><%= scrape.error %></td>
-	<td><%= scrape.removed %></td>
-	<td><%= link_to "Requeue", media_vault_restart_scrape_path(scrape) %></td>
+<% status = scrape.status %>
+<tr id="<%= dom_id(scrape) %>" class="border">
+	<td class="border px-2 whitespace-nowrap"><%= t("scrape_status.statuses.#{status}") %></td>
+	<td class="border px-2 break-all"><%= link_to scrape.url, scrape.url, target: "_blank", rel: "noopener noreferrer" %></td>
+	<td class="border px-2 whitespace-nowrap"><%= l(scrape.created_at, format: :short) %></td>
+	<td class="border px-2 whitespace-nowrap">
+		<% if scrape.archive_item.present? %>
+			<%= link_to t("scrape_status.view_media"), media_vault_medium_path(scrape.archive_item) %>
+		<% elsif status == :error %>
+			<%= link_to t("scrape_status.requeue"), media_vault_restart_scrape_path(scrape) %>
+		<% else %>
+			&mdash;
+		<% end %>
+	</td>
 </tr>

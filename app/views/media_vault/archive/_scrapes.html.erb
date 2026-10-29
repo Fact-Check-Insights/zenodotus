@@ -1,18 +1,21 @@
-<div>
-	<table>
-		<thead>
-			<tr>
-				<th>URL</th>
-				<th>Fulfilled</th>
-				<th>Errored</th>
-				<th>Removed</th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody>
-			<% pagy_items.each do |scrape| %>
-				<%= render partial: "scrape", locals: { scrape: scrape } %>
-			<% end %>
-		</tbody>
-	</table>
-</div>
+<% if scrapes.empty? %>
+	<p class="mt-5"><%= t("scrape_status.no_scrapes") %></p>
+<% else %>
+	<div class="overflow-x-auto mt-5">
+		<table id="scrapes-table" class="table-auto w-full">
+			<thead>
+				<tr>
+					<th class="border text-left px-2"><%= t("scrape_status.columns.status") %></th>
+					<th class="border text-left px-2"><%= t("scrape_status.columns.link") %></th>
+					<th class="border text-left px-2"><%= t("scrape_status.columns.requested_at") %></th>
+					<th class="border text-left px-2"><%= t("scrape_status.columns.result") %></th>
+				</tr>
+			</thead>
+			<tbody>
+				<% scrapes.each do |scrape| %>
+					<%= render partial: "scrape", locals: { scrape: scrape } %>
+				<% end %>
+			</tbody>
+		</table>
+	</div>
+<% end %>

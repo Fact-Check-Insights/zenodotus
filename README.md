@@ -184,20 +184,44 @@ We use mostly a standard Rails stack, with a few new things that are generally r
 
 See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for additional development setup instructions.
 
+## Docker development
+
+As an alternative to installing the prerequisites above, you can develop inside Docker with `docker-compose.dev.yml`. It runs Postgres, Redis, the Rails server, Sidekiq and the Tailwind/Dart Sass watchers in development mode, with the code bind-mounted so changes reload without rebuilding.
+
+1. Install Docker and Docker Compose v2
+1. Create the environment file: `cp env.development.example .env.development`
+   - Dummy values are enough to boot. Ask another developer for real values if you need scraping (Hypatia), email, LLM categorization or image search.
+1. Add the hosts to `/etc/hosts` (see [Installation](#installation))
+1. Start everything: `docker compose -f docker-compose.dev.yml up --build`
+   - The first run installs the gems into a volume and creates, migrates and seeds the database (`setup` service), which takes a few minutes.
+1. Open [http://www.factcheckinsights.local:3000](http://www.factcheckinsights.local:3000) or [http://vault.factcheckinsights.local:3000](http://vault.factcheckinsights.local:3000). The seeds create the admin user `admin@example.com` / `password123`.
+
+Common tasks (tip: `export COMPOSE_FILE=docker-compose.dev.yml` to drop the `-f` flag):
+
+```bash
+docker compose -f docker-compose.dev.yml exec web bin/rails console
+docker compose -f docker-compose.dev.yml exec web bin/rails db:migrate
+docker compose -f docker-compose.dev.yml exec web bin/rails test
+docker compose -f docker-compose.dev.yml run --rm setup   # after changing the Gemfile
+docker compose -f docker-compose.dev.yml down -v           # stop and wipe the database and gems
+```
+
 ## Docker deployment and management
 
-This app can run on bare metal using Docker Compose. The compose stack includes:
+This app can run on bare metal using Docker Compose (`docker-compose.yml`, production only). The compose stack includes:
 
-- Postgres, Redis, Memcached, Neo4j (internal only)
+- Redis and Memcached (internal only)
 - Web (Puma) and Sidekiq worker
 - Caddy reverse proxy to `web:3000`
+
+Postgres is **not** part of the stack: point the app at an external database by setting `DATABASE_URL` in `.env`.
 
 ### One-time setup
 
 1. Install Docker and Docker Compose v2
 2. Create environment file:
-   - Copy `env.example` to `.env`
-   - Fill required values: `SECRET_KEY_BASE`, `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_S3_BUCKET_NAME`, `CLOUDFRONT_HOST`
+   - Copy `env.recommended` to `.env` (it lists every key required by `config/initializers/figaro.rb`)
+   - Fill required values, including `DATABASE_URL`, `SECRET_KEY_BASE`, `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_S3_BUCKET_NAME`, `S3_ENDPOINT`, `CLOUDFRONT_HOST`
    - Optionally adjust: `FACT_CHECK_INSIGHTS_HOST`, `MEDIA_VAULT_HOST`, `PUBLIC_LINK_HOST`
 3. Build images:
    ```bash
@@ -208,7 +232,7 @@ This app can run on bare metal using Docker Compose. The compose stack includes:
 
 ```bash
 # Start backing services first (optional; web will wait on healthchecks)
-docker compose up -d db redis memcached neo4j
+docker compose up -d redis memcached
 
 # Start application services
 docker compose up -d web worker caddy
@@ -219,19 +243,17 @@ docker compose down
 
 ### Healthchecks (compose-managed)
 
-- Postgres: `pg_isready` (with start_period)
 - Redis: `redis-cli ping`
-- Neo4j: `cypher-shell` `RETURN 1;`
 - Web: `curl http://localhost:3000/` with `Host` header
 
-`web` waits for healthy `db`, `redis`, and `neo4j` before starting. Neo4j and Postgres ports are not exposed externally.
+`web` waits for a healthy `redis` before starting, and the entrypoint waits for the Postgres host in `DATABASE_URL` to accept connections.
 
 ### Logs
 
 ```bash
 docker compose logs -f web
 docker compose logs -f worker
-docker compose logs -f db redis memcached neo4j caddy
+docker compose logs -f redis memcached caddy
 ```
 
 ### Scaling workers

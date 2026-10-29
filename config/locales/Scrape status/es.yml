@@ -1,0 +1,17 @@
+es:
+  scrape_status:
+    title: "Estado de scrapings"
+    request: "solicitud"
+    no_scrapes: "Todavía no has solicitado ningún scraping."
+    columns:
+      status: "Estado"
+      link: "Enlace"
+      requested_at: "Fecha de solicitud"
+      result: "Resultado"
+    statuses:
+      pending: "Pendiente"
+      completed: "Completado"
+      error: "Error"
+      removed: "Eliminado"
+    view_media: "Ver en MediaVault"
+    requeue: "Reintentar"
