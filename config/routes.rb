@@ -90,6 +90,7 @@ Rails.application.routes.draw do
 
       resources :fact_check_organizations, only: [:index]
       resources :organizations
+      resources :api_keys, except: [:show]
 
       resources :users, only: [:index, :show, :new, :create, :update] do
         post "reset_mfa", action: "reset_mfa", as: "reset_mfa"
@@ -152,6 +153,13 @@ Rails.application.routes.draw do
     scope "api", format: :json do
       get "/check_if_logged_in", to: "api#check_if_logged_in", as: "api_check_if_logged_in"
       post "/submit", to: "api#submit", as: "api_submit"
+    end
+
+    # Public REST API, authenticated with API keys
+    namespace :api, defaults: { format: :json } do
+      namespace :v1 do
+        resources :scrapes, only: [:index, :show, :create]
+      end
     end
   end
 

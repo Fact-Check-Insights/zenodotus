@@ -1,0 +1,19 @@
+<% @title_tag = t("api_keys.created_title") %>
+<% @page_id = "api_keys" %>
+
+<div class="mx-auto max-w-screen-md px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+  <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl"><%= t("api_keys.created_title") %></h1>
+
+  <div class="mt-6 rounded-md bg-yellow-50 p-4 text-sm text-yellow-800">
+    <%= t("api_keys.created_warning") %>
+  </div>
+
+  <p class="mt-6 text-sm"><strong><%= t("api_keys.columns.description") %>:</strong> <%= @api_key.description %></p>
+
+  <div class="mt-3 flex items-center gap-2" data-controller="media-vault--clipboard" data-media-vault--clipboard-copied-label-value="<%= t("api_keys.copied") %>">
+    <input id="api-key-value" type="text" readonly value="<%= @api_key.api_key %>" data-media-vault--clipboard-target="source" class="w-full rounded-md border-2 border-gray-300 py-2 px-3 font-mono text-gray-800">
+    <button type="button" class="inline-block rounded-sm bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700" data-media-vault--clipboard-target="button" data-action="click->media-vault--clipboard#copy"><%= t("api_keys.copy") %></button>
+  </div>
+
+  <p class="mt-6 text-sm"><%= link_to t("api_keys.back_to_list"), admin_api_keys_path %></p>
+</div>

@@ -45,6 +45,14 @@
 								<span><%= t("layouts.header.switch_to", title: SiteDefinitions::FACT_CHECK_INSIGHTS[:title]) %></span>
  							<% end %>
   						</li>
+  						<% if current_user.can_access_media_vault? %>
+ 							<li>
+								<%= link_to media_vault_status_path, class: "btn btn--naked icon-prefixed" do %>
+   									<%= use_svg "library", svg_attrs: { class: "icon icon--lg", aria: { hidden: true } } %>
+   									<span><%= t("layouts.header.scrape_status") %></span>
+								<% end %>
+ 							</li>
+  						<% end %>
   						<% if current_user.is_admin? %>
  							<li>
 								<%= link_to admin_root_path, class: "btn btn--naked icon-prefixed" do %>

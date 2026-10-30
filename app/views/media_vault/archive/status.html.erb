@@ -1,18 +1,13 @@
 <% @page_id = "status" %>
 
 <div class="content page--media_vault--dashboard">
-	<%# Make this change dpeending on if we're in MyVault or not %>
 	<div class="flex justify-between flex-col md:flex-row lg:flex-row">
 		<div>
-			<h2><%= "MyVault Archive Status" %></h2>
+			<h2><%= t("scrape_status.title") %></h2>
 		</div>
 	</div>
 
-	<%= turbo_frame_tag "archived_items", target: "_top", class: "archive-items archive-items--boxed-items archive-items--masonry" do %>
-		<% render partial: "scrapes", locals: { pagy_items: @scrapes } %>
-	<% end %>
+	<%= render partial: "scrapes", locals: { scrapes: @scrapes } %>
 
-	<%= turbo_frame_tag "archived_items_pagination", target: "_top" do %>
-		<% render partial: "paginator" %>
-	<% end %>
+	<%= render partial: "paginator", locals: { item_name: t("scrape_status.request") } %>
 </div>

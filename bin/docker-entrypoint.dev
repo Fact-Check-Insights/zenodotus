@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Remove a stale Puma pid left behind by a container that was killed
+rm -f tmp/pids/server.pid
+mkdir -p tmp/pids tmp/sockets log
+
+exec "$@"

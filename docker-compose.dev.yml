@@ -1,0 +1,102 @@
+# Local development stack. Usage:
+#   cp env.development.example .env.development
+#   docker compose -f docker-compose.dev.yml up
+# See README.md ("Docker development") for details.
+
+x-app: &app
+  build:
+    context: .
+    dockerfile: Dockerfile.dev
+    args:
+      RUBY_VERSION: 3.3.7
+  image: zenodotus-dev
+  env_file:
+    - .env.development
+  environment:
+    RAILS_ENV: development
+    ON_DOCKER: "yes" # config/database.yml uses host "db" when set
+    REDISCLOUD_URL: redis://redis:6379/1
+  volumes:
+    - .:/app
+    - bundle:/bundle
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # One-shot: installs gems and creates/migrates/seeds the database, then exits.
+  # Every other app service waits for it, so they never run `bundle install` concurrently.
+  setup:
+    <<: *app
+    command: ["bash", "-c", "bundle check || bundle install && bin/rails db:prepare"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    <<: *app
+    # Extra ports give each site its own hostname behind port-based proxies (e.g. Coder,
+    # where each port gets a subdomain). Unused when routing via /etc/hosts.
+    ports:
+      - "3000:3000"
+      - "3001:3000"
+      - "3002:3000"
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  worker:
+    <<: *app
+    command: ["bundle", "exec", "sidekiq"]
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  # CSS watchers (equivalent to the tailwind/dartsass entries in Procfile.dev).
+  # They need a TTY, otherwise the watch processes exit as soon as stdin closes.
+  tailwind:
+    <<: *app
+    command: ["bin/rails", "tailwindcss:watch[always]"]
+    tty: true
+    stdin_open: true
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+
+  dartsass:
+    <<: *app
+    command: ["bin/rails", "dartsass:watch"]
+    tty: true
+    stdin_open: true
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+
+volumes:
+  bundle:
+  postgres-data:
+  redis-data:

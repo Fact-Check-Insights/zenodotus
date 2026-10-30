@@ -1,0 +1,35 @@
+<% if api_key.errors.any? %>
+  <div class="mt-6 rounded-md bg-red-50 p-4 text-sm text-red-700">
+    <ul class="list-disc pl-5">
+      <% api_key.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: api_key, url: api_key.persisted? ? admin_api_key_path(api_key) : admin_api_keys_path, class: "mt-6 space-y-6 max-w-xl", data: { turbo: api_key.persisted? } do |form| %>
+  <%# Creating renders the clear key instead of redirecting, which Turbo doesn't allow %>
+  <div>
+    <%= form.label :description, t("api_keys.form.description"), class: "block text-sm font-medium text-gray-900" %>
+    <%= form.text_field :description, required: true, placeholder: t("api_keys.form.description_hint"), class: "mt-1 w-full rounded-md border-2 border-gray-300 py-2 px-3 text-gray-800 focus:border-purple-600 focus:outline-none" %>
+  </div>
+
+  <% unless api_key.persisted? %>
+    <div>
+      <%= form.label :user_id, t("api_keys.form.user"), class: "block text-sm font-medium text-gray-900" %>
+      <%= form.collection_select :user_id, users, :id, ->(user) { "#{user.name} (#{user.email})" }, {}, class: "mt-1 w-full rounded-md border-2 border-gray-300 py-2 px-3 text-gray-800 focus:border-purple-600 focus:outline-none" %>
+      <p class="mt-1 text-sm text-gray-600"><%= t("api_keys.form.user_hint") %></p>
+    </div>
+  <% end %>
+
+  <div class="flex items-center gap-2">
+    <%= form.check_box :active %>
+    <%= form.label :active, t("api_keys.form.active"), class: "text-sm font-medium text-gray-900" %>
+  </div>
+
+  <div class="flex items-center gap-4">
+    <%= form.submit api_key.persisted? ? t("api_keys.form.save") : t("api_keys.form.create"), class: "inline-block rounded-sm bg-indigo-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-indigo-700" %>
+    <%= link_to t("api_keys.form.cancel"), admin_api_keys_path, class: "text-sm text-gray-600" %>
+  </div>
+<% end %>

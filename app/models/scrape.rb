@@ -17,13 +17,39 @@ class Scrape < ApplicationRecord
     twitter: "twitter", instagram: "instagram", facebook: "facebook", youtube: "youtube", tiktok: "tiktok", bluesky: "bluesky", telegram: "telegram"
     }, _prefix: true
 
-  enum initiated_from: [ "site", "plugin", "media_review" ]
+  # Integer-backed, so new values must be appended at the end
+  enum initiated_from: [ "site", "plugin", "media_review", "api" ]
 
   has_one :archive_item, dependent: :destroy
   belongs_to :media_review, dependent: nil, optional: true
   belongs_to :user, optional: true
 
   after_create :send_notification
+
+  # A single status for display, derived from the scrape's flags.
+  # `error` is checked before `fulfilled` because `mark_error` sets it without fulfilling the scrape.
+  sig { returns(Symbol) }
+  def status
+    return :removed if self.removed
+    return :error if self.error
+    return :completed if self.fulfilled
+
+    :pending
+  end
+
+  STATUSES = T.let([:pending, :completed, :error, :removed].freeze, T::Array[Symbol])
+
+  # SQL counterpart of `#status`, keep both in sync
+  scope :with_status, ->(status) do
+    not_removed = where(removed: [false, nil])
+    case status.to_sym
+    when :removed then where(removed: true)
+    when :error then not_removed.where(error: true)
+    when :completed then not_removed.where(error: false, fulfilled: true)
+    when :pending then not_removed.where(error: false, fulfilled: false)
+    else none
+    end
+  end
 
   # Enqueue the scraping callout to Hypatia into the ActiveJob queue
   # TODO: Eventually this should be the main interface to kicking it off, but for now... no

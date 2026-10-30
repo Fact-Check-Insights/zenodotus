@@ -421,6 +421,63 @@ class ScrapeTest < ActiveSupport::TestCase
     end
   end
 
+  test "status is pending for a new scrape" do
+    scrape = Scrape.create!({
+      url: "https://www.instagram.com/p/CBcqOkyDDH8/",
+      scrape_type: :instagram
+    })
+
+    assert_equal :pending, scrape.status
+  end
+
+  test "status is completed for a fulfilled scrape" do
+    scrape = Scrape.create!({
+      url: "https://www.instagram.com/p/CBcqOkyDDH8/",
+      scrape_type: :instagram,
+      fulfilled: true
+    })
+
+    assert_equal :completed, scrape.status
+  end
+
+  test "status is error for an errored scrape even if it's not fulfilled" do
+    scrape = Scrape.create!({
+      url: "https://www.instagram.com/p/CBcqOkyDDH8/",
+      scrape_type: :instagram
+    })
+    scrape.mark_error
+
+    assert_equal :error, scrape.status
+  end
+
+  test "status is removed for a removed scrape" do
+    scrape = Scrape.create!({
+      url: "https://www.instagram.com/p/CBcqOkyDDH8/",
+      scrape_type: :instagram
+    })
+
+    response = [{ "status": "removed" }.stringify_keys] # responses come in with string not symbols so to simulate that this happens
+    scrape.fulfill(response)
+
+    assert_equal :removed, scrape.status
+  end
+
+  test "with_status matches the status of each scrape" do
+    url = "https://www.instagram.com/p/CBcqOkyDDH8/"
+    scrapes = {
+      pending: Scrape.create!({ url: url, scrape_type: :instagram }),
+      completed: Scrape.create!({ url: url, scrape_type: :instagram, fulfilled: true }),
+      error: Scrape.create!({ url: url, scrape_type: :instagram, error: true }),
+      removed: Scrape.create!({ url: url, scrape_type: :instagram, removed: true, fulfilled: true }),
+    }
+
+    scrapes.each do |status, scrape|
+      assert_equal status, scrape.status
+      matching = Scrape.where(id: scrapes.values.map(&:id)).with_status(status)
+      assert_equal [scrape.id], matching.pluck(:id), "with_status(#{status})"
+    end
+  end
+
   test "emails are not sent when a scrape errors for a MyVault without a user" do
     scrape = Scrape.create!({
       url: "https://www.instagram.com/p/CBcqOkyDDH8/",

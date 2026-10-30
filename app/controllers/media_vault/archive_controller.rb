@@ -135,9 +135,9 @@ class MediaVault::ArchiveController < MediaVaultController
   # A status page for ad hoc archives
   sig { void }
   def status
-    scrapes = Scrape.where(user: current_user).order(created_at: :desc)
+    scrapes = Scrape.where(user: current_user).includes(:archive_item).order(created_at: :desc)
 
-    @pagy_items, @scrapes = pagy_array( # This is just `pagy(` when we get it back to and ActiveRecord collection
+    @pagy_items, @scrapes = pagy(
           scrapes,
           page_param: :p,
           items: ARCHIVE_ITEMS_PER_PAGE
@@ -147,7 +147,8 @@ class MediaVault::ArchiveController < MediaVaultController
   # Restart the scrape
   sig { void }
   def restart_scrape
-    scrape = Scrape.find(params[:scrape_id])
+    # Scoped to the current user so nobody can requeue someone else's scrape
+    scrape = Scrape.where(user: current_user).find(params[:scrape_id])
     scrape.enqueue
 
     respond_to do |format|

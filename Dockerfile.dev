@@ -1,0 +1,39 @@
+# syntax=docker/dockerfile:1
+
+# Development image. Code is bind-mounted at runtime and gems live in a named volume,
+# so this image only needs rebuilding when system dependencies change.
+ARG RUBY_VERSION=3.3.7
+FROM ruby:${RUBY_VERSION}-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    git \
+    curl \
+    ca-certificates \
+    pkg-config \
+    libpq-dev \
+    postgresql-client \
+    libyaml-dev \
+    libglib2.0-0 \
+    libglib2.0-dev \
+    libvips \
+    libvips-dev \
+    libheif-dev \
+    libpoppler-glib8 \
+    procps \
+    shared-mime-info \
+    ffmpeg \
+    tzdata \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
+
+ENV BUNDLE_PATH=/bundle \
+    BUNDLE_JOBS=4 \
+    BUNDLE_RETRY=3
+
+RUN gem install bundler -v 2.4.14
+
+WORKDIR /app
+
+ENTRYPOINT ["bin/docker-entrypoint.dev"]
+CMD ["bin/rails", "server", "-p", "3000", "-b", "0.0.0.0"]

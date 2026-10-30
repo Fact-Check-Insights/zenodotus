@@ -199,4 +199,41 @@ class MediaVault::ArchiveControllerTest < ActionDispatch::IntegrationTest
     get media_vault_myvault_url
     assert_response :success
   end
+
+  test "status redirects without authentication" do
+    get media_vault_status_url
+    assert_redirected_to new_user_session_path
+  end
+
+  test "status only lists the current user's scrapes" do
+    own_scrape = Scrape.create!({ url: "https://www.instagram.com/p/CBcqOkyDDH8/", scrape_type: :instagram, user: users(:user) })
+    other_scrape = Scrape.create!({ url: "https://www.instagram.com/p/CHdIkUVBz3C/", scrape_type: :instagram, user: users(:media_vault_user) })
+
+    sign_in users(:user)
+    get media_vault_status_url
+    assert_response :success
+
+    assert_select "tr#scrape_#{own_scrape.id}"
+    assert_select "tr#scrape_#{other_scrape.id}", count: 0
+  end
+
+  test "status links a completed scrape to its archived media" do
+    scrape = Scrape.create!({ url: "https://www.instagram.com/p/CHdIkUVBz3C", scrape_type: :instagram, user: users(:user) })
+    zorki_image_post = InstagramMediaSource.extract("https://www.instagram.com/p/CHdIkUVBz3C/", MediaSource::ScrapeType::Instagram, true, initiated_from: Scrape.initiated_froms[:site])["scrape_result"]
+    scrape.fulfill(zorki_image_post)
+
+    sign_in users(:user)
+    get media_vault_status_url
+    assert_response :success
+
+    assert_select "tr#scrape_#{scrape.id} a[href=?]", media_vault_medium_path(scrape.reload.archive_item)
+  end
+
+  test "cannot requeue another user's scrape" do
+    other_scrape = Scrape.create!({ url: "https://www.instagram.com/p/CHdIkUVBz3C/", scrape_type: :instagram, user: users(:media_vault_user) })
+
+    sign_in users(:user)
+    get media_vault_restart_scrape_url(other_scrape)
+    assert_response :not_found
+  end
 end
