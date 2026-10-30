@@ -170,16 +170,19 @@ protected
 
   sig { void }
   def authenticate_user_from_api_key!
-    if params[:api_key].blank?
+    # Accepts `Authorization: Bearer <key>`, falling back to the `api_key` param
+    api_key = ActionController::HttpAuthentication::Token.token_and_options(request)&.first.presence ||
+              params[:api_key].presence
+
+    if api_key.blank?
       render json: {
         error: "Unauthorized credentials, please check your API Key"
       }, status: :unauthorized
       return false
     end
 
-    api_key = params[:api_key].presence
     hashed_api_key = ZenoEncryption.hash_string(api_key)
-    api_key = hashed_api_key && ApiKey.find_by_hashed_api_key(hashed_api_key)
+    api_key = hashed_api_key && ApiKey.active.find_by_hashed_api_key(hashed_api_key)
 
     # Devise.secure_compare prevents timing attacks
     if api_key && Devise.secure_compare(api_key.hashed_api_key, hashed_api_key)

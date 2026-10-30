@@ -6,4 +6,13 @@
 #
 one:
   hashed_api_key: <%= ZenoEncryption.hash_string("123456789") %>
+  key_prefix: "12345678"
+  description: "Test client"
+  user: user
+
+inactive:
+  hashed_api_key: <%= ZenoEncryption.hash_string("987654321") %>
+  key_prefix: "98765432"
+  description: "Revoked client"
+  active: false
   user: user
