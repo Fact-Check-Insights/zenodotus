@@ -462,6 +462,22 @@ class ScrapeTest < ActiveSupport::TestCase
     assert_equal :removed, scrape.status
   end
 
+  test "with_status matches the status of each scrape" do
+    url = "https://www.instagram.com/p/CBcqOkyDDH8/"
+    scrapes = {
+      pending: Scrape.create!({ url: url, scrape_type: :instagram }),
+      completed: Scrape.create!({ url: url, scrape_type: :instagram, fulfilled: true }),
+      error: Scrape.create!({ url: url, scrape_type: :instagram, error: true }),
+      removed: Scrape.create!({ url: url, scrape_type: :instagram, removed: true, fulfilled: true }),
+    }
+
+    scrapes.each do |status, scrape|
+      assert_equal status, scrape.status
+      matching = Scrape.where(id: scrapes.values.map(&:id)).with_status(status)
+      assert_equal [scrape.id], matching.pluck(:id), "with_status(#{status})"
+    end
+  end
+
   test "emails are not sent when a scrape errors for a MyVault without a user" do
     scrape = Scrape.create!({
       url: "https://www.instagram.com/p/CBcqOkyDDH8/",

@@ -154,6 +154,13 @@ Rails.application.routes.draw do
       get "/check_if_logged_in", to: "api#check_if_logged_in", as: "api_check_if_logged_in"
       post "/submit", to: "api#submit", as: "api_submit"
     end
+
+    # Public REST API, authenticated with API keys
+    namespace :api, defaults: { format: :json } do
+      namespace :v1 do
+        resources :scrapes, only: [:index, :show, :create]
+      end
+    end
   end
 
   scope "/account" do
