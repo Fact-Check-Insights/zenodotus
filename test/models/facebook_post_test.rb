@@ -76,8 +76,8 @@ class FacebookPostTest < ActiveSupport::TestCase
   # bare string, the Antena path sends a list. Both shapes must archive.
   test "accepts aws_image_keys as a string and as a list" do
     [
-      ["string", "facebook_media_only_key.jpg"],
-      ["list", ["facebook_media_only_key.jpg"]],
+      ["string", "facebook_media_7e3dbb36-586a-4a81-96c2-253d0a3977b7.png"],
+      ["list", ["facebook_media_7e3dbb36-586a-4a81-96c2-253d0a3977b7.png"]],
     ].each do |shape, keys|
       post_id = shape == "list" ? "1234501" : "1234502"
       forki_post = [{
@@ -89,7 +89,7 @@ class FacebookPostTest < ActiveSupport::TestCase
           "created_at" => 1635464082,
           "aws_image_keys" => keys,
           "aws_video_keys" => nil,
-          "aws_screenshot_key" => "facebook_media_shot_#{post_id}.png",
+          "aws_screenshot_key" => "facebook_screenshot_8cd57f61-d85c-4a8a-a871-99930617349a.png",
           "image_file" => nil,
           "video_file" => nil,
           "num_comments" => 0,
